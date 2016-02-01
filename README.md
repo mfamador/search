@@ -1,2 +1,2 @@
-# Search-framework 2.0
+# Search framework 2.0
 

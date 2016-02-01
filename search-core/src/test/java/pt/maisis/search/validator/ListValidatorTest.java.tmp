@@ -1,0 +1,22 @@
+package pt.maisis.search.validator;
+
+import junit.framework.TestCase;
+
+/**
+ * Testes para a classe {@link ListValidator}.
+ *
+ * @version 1.0
+ */
+public class ListValidatorTest extends TestCase {
+
+    public void testListValidator() {
+        ListValidator validator = new ListValidator();
+        validator.setPattern(",");
+
+        assertTrue(validator.isValid("1"));
+
+        assertTrue(validator.isValid("1,1"));
+
+        assertFalse(validator.isValid(null));
+    }
+}

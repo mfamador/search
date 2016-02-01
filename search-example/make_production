@@ -1,0 +1,3 @@
+#!/bin/sh
+
+mvn -o -Pprod clean compile package site site:deploy tomcat:redeploy

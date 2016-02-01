@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+##-------------------------------------------------------------------#
+##                                                                   #
+## Search JFreeReport Sample                                         #
+##                                                                   #
+## Este exemplo pode ser reutilizado de forma a satisfazer as        #
+## necessidades do sistema em causa.                                 #
+##                                                                   #
+##-------------------------------------------------------------------#
+
+
+##<report
+##    xmlns="http://jfreereport.sourceforge.net/namespaces/reports/legacy/simple"
+##    name="search" width="$page.getWidth(70)" height="$page.getHeight(70)" 
+##    topmargin="35" leftmargin="35" bottommargin="35" rightmargin="35">
+
+<report
+    xmlns="http://jfreereport.sourceforge.net/namespaces/reports/legacy/simple"
+    name="search" pageformat="A4"
+    topmargin="35" leftmargin="35" bottommargin="35" rightmargin="35">
+
+  <parser-config>
+    <property name="title">Search Framework / JFreeReport</property>
+    <property name="description">Simples exemplo que pretende mostrar a forma como integrar o JFreeReport na Search Framework. Este exemplo pode ser utilizado como ponto de partida, devendo ser alterado em função das necessidades do sistema em causa.</property>
+  </parser-config>
+
+  ##---------------------------------#
+  ##                                 #
+  ## REPORT HEADER                   #
+  ##                                 #
+  ##---------------------------------#
+
+  <reportheader fontname="Verdana" fontsize="8">
+    <!--
+    <imageurl-field x="0" y="0" fieldname="Chart" width="540" height="300" keepAspectRatio="true" scale="true"/>
+    -->
+
+    <imageref x="37%" y="0" height="91" width="131" src="file:webapps/search-example-1.3/WEB-INF/classes/logo.gif"/>
+    <label x="0" y="71" width="100%" height="20" alignment="center" color="#555555" fontsize="12">${title}</label>
+    <date-field x="0" y="91"  width="100%" height="10" alignment="center" fieldname="report.date"/>
+    <label x="0" y="111" width="100%" height="30" color="#555555" alignment="left">${description}</label>
+  </reportheader>
+
+  ##---------------------------------#
+  ##                                 #
+  ## PAGE FOOTER                     #
+  ##                                 #
+  ##---------------------------------#
+
+  #if ($format == 'pdf')
+  <pagefooter height="24" onfirstpage="true" onlastpage="true" fontname="Serif" fontstyle="plain" fontsize="9">
+    <date-field fieldname="report.date" format="dd-MM-yyyy" x="0" y="4" width="25%" height="18" alignment="left"/>
+    <string-field fieldname="pageXofY" x="75%" y="4" width="25%" height="18" alignment="right"/>
+  </pagefooter>
+  #end
+
+  ##---------------------------------#
+  ##                                 #
+  ## GROUPS                          #
+  ##                                 #
+  ##---------------------------------#
+
+  <groups>
+    <group name="global">
+      <groupheader fontname="Verdana" fontsize="8" vertical-alignment="middle" repeat="true">
+        #macro (columnHeader $results $x $y) 
+          #foreach ($result in $results)
+        
+            <rectangle 
+                x="$x" y="$y" width="$result.width" height="$result.height"
+                color="#eeeeee" fill="true" draw="false"/>
+            <rectangle
+                x="$x" y="$y" width="$result.width" height="$result.height"
+                color="#aaaaaa" weight="0.5" fill="false" draw="true"/>
+            <label
+                x="$x" y="$y" width="$result.width" height="$result.height"
+                color="#000000" alignment="center">$result.resultLabel</label>
+            
+            #if ($result.composite)
+              #set ($nexty = $y + 15)
+              #columnHeader ($result.children $x $nexty)
+            #else
+              #set ($x = $x + $result.width)
+            #end
+          #end
+        #end
+
+        #columnHeader ($resultMetaData 0 0)
+      </groupheader>
+    </group>
+  </groups>
+
+  ##---------------------------------#
+  ##                                 #
+  ## ITEMS                           #
+  ##                                 #
+  ##---------------------------------#
+
+  <items fontname="Verdana" fontsize="8" vertical-alignment="middle" height="15">
+    #set ($x = 0)
+    #foreach ($result in $expandedResultMetaData)
+
+    <rectangle 
+        x="$x" y="0" width="$result.width" height="15" 
+        color="#aaaaaa" weight="0.5" fill="false" draw="true"/>
+    
+    <$result.fieldType name="$result.name"
+        x="$x" y="0" width="$result.width" height="15" 
+        alignment="$result.align" fieldname="$result.name"
+        #if ($result.formatPatternAvailable) format="$result.formatPattern" #end/>
+
+    #set ($x = $x + $result.width)
+    #end
+  </items>
+
+
+  ##---------------------------------#
+  ##                                 #
+  ## FUNCTIONS                       #
+  ##                                 #
+  ##---------------------------------#
+
+  <functions>
+    <function class="org.jfree.report.function.PageOfPagesFunction" name="pageXofY">
+      <properties>
+	<property name="format">{0}/{1}</property>
+      </properties>
+    </function>
+
+##    <expression class="org.pentaho.plugin.jfreereport.reportcharts.CategorySetCollectorFunction" name="chartDataSource">
+##      <properties>
+##        <property name="categoryColumn">name</property>
+##        <property name="seriesName[0]">Phone</property>
+##        <property name="valueColumn[0]">phone</property>
+##        <property name="summaryOnly">false</property>
+##      </properties>
+##    </expression>
+##
+##    <expression class="org.pentaho.plugin.jfreereport.reportcharts.BarChartExpression" name="Chart">
+##      <properties>
+##        <property name="title">Actual vs. Budget</property>
+##        <property name="titleFont">Arial-BOLD-14</property>
+##        <property name="labelFont">Arial--8</property>
+##        <property name="legendFont">Arial--6</property>
+##        <property name="backgroundColor">#DDDDDD</property>
+##        <property name="showBorder">true</property>
+##        <property name="horizontal">false</property>
+##        <property name="dataSource">chartDataSource</property>
+##        <property name="drawBarOutline">false</property>
+##        <property name="seriesColor[0]">#018FE1</property>
+##        <property name="seriesColor[1]">#CB02D2</property>
+##	  <property name="legendLocation">BOTTOM</property>
+##	  <property name="showLegend">true</property>
+##	  <property name="chartHeight">300</property>
+##	  <property name="chartWidth">540</property>
+##	  <property name="useDrawable">false</property>
+##	  <property name="labelRotation">7.0</property>
+##	  <property name="drawBarOutline">true</property>
+##      </properties>
+##    </expression>
+
+  </functions>
+</report>

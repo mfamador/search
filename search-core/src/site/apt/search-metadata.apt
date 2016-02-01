@@ -1,0 +1,705 @@
+﻿Search MetaData
+
+  Este documento pretende ser uma referência do descriptor utilizado para 
+  definir pesquisas. É aconcelhável ler primeiro a {{{index.html}introdução}} 
+  à <framework> bem como o {{{../search-example/index.html}exemplo}} 
+  também disponível.
+
+  Estrutura base deste descriptor:
+
++---+
+<search-metadata>
+  <search-params/>
+  <result-params/>
+  <required-result-params/>
+  <selected-result-params/>
+  <selected-result-params-order/>
+</search-metadata>
++---+
+
+
+* {search-metadata}
+
+  Elemento pai deste descriptor.
+  
+*----------------------------------------------------------------+---------------------------------------------------+
+ <<Elemento>>                                                    | <<Descrição>>
+*----------------------------------------------------------------+---------------------------------------------------+
+ name                                                            | Nome identificador da pesquisa.
+                                                                 | Sempre que é efectuada uma pesquisa este nome deverá ser disponibilizado.
+*----------------------------------------------------------------+---------------------------------------------------+
+ label                                                           | Label da pesquisa.
+*----------------------------------------------------------------+---------------------------------------------------+
+ description                                                     | Descrição do que a pesquisa é suposto fazer.
+*----------------------------------------------------------------+---------------------------------------------------+
+ search-engine-class                                             | Implementação do motor de pesquisa ({{{apidocs/pt/maisis/search/dao/SearchEngineDao.html}SearchEngineDao}}) a utilizar.
+                                                                 | Para mais informação consulte o documento {{{search-config.html}search-config}}.
+*----------------------------------------------------------------+---------------------------------------------------+
+ data-source                                                     | DataSource (JNDI lookup name) que deve ser utilizada para capturar os dados das pesquisas.
+                                                                 | Existem várias formas de definr uma DataSource (consultar {{{search-config.html}search-config}}).
+*----------------------------------------------------------------+---------------------------------------------------+
+ table-source                                                    | Aqui poderá optar-se por definir o nome de uma tabela ou view que será utilizada para capturar os dados da Base de Dados. Neste caso é gerado um select dinâmicamente sempre que se faz uma pesquisa.
+ ou                                                              | Por vezes, é necessário capturar dados de mais do que uma tabela e a criação de uma view não é uma opção. Neste caso pode-se definir o sql dinâmicamente através de uma template.
+ sql-template                                                    |
+*----------------------------------------------------------------+---------------------------------------------------+
+ properties                                                      | Propriedades dinâmicas que poderão se especificadas para a pesquisa.
+                                                                 | Estas propriedades poderão, por exemplo, ser posteriormente utilizadas na template que apresenta os resultados das pesquisa.
+*-----------------------+---------------------------------------------------+
+ {{{#search-params}search-params}}                               | Elemento que agrega todos os critérios de pesquisa.
+*----------------------------------------------------------------+---------------------------------------------------+
+ {{{#result-params}result-params}}                               | Elemento que agrega todos os campos de retorno.
+*----------------------------------------------------------------+---------------------------------------------------+
+ {{{#required-result-params}required-result-params}}             | Elemento que permite definir campos de retorno que são necessários no resultado de uma pesquisa, mas que não são visíveis ao utilizador.
+*----------------------------------------------------------------+---------------------------------------------------+
+ {{{#selected-result-params}selected-result-params}}             | Campos de retorno seleccionados por defeito.
+*----------------------------------------------------------------+---------------------------------------------------+
+ {{{#selected-result-params-order}selected-result-params-order}} | Ordenação por defeito.
+*----------------------------------------------------------------+---------------------------------------------------+
+
+
+* {search-params}
+
+  O elemento <<<search-params>>> é utilizado para definir todos os <search params>
+  (critérios de pesquisa) para uma dada pesquisa.
+
+  Um <<<search-param>>> é o que permite filtrar os dados devolvidos pelo motor de 
+  pesquisa.
+
+  Um <<<search-param>>> permite definir:
+
+*----------------------------------------------+---------------------------------------------------+
+ <<Elemento>>                                  | <<descrição>>
+*----------------------------------------------+---------------------------------------------------+
+ name                                          | Nome identificativo do search param.
+*----------------------------------------------+---------------------------------------------------+
+ field                                         | Campo que este <search param> mapeia.
+                                               | Como, actualmente, só são suportadas base de dados, este campo corresponde ao nome da coluna de uma tabela ou view.
+*----------------------------------------------+---------------------------------------------------+
+ operator                                      | Operador a utilizar (ex: =, IN, etc.)
+*----------------------------------------------+---------------------------------------------------+
+ {{{#container}container}}                     | Tipo de container a utilizar para este <search param> (pode ser simples ou composto).
+ ou                                            |
+ {{{#composite-container}composite-container}} |
+*-----------------------------------------------+---------------------------------------------------+
+ properties                                    | Propriedades dinâmicas que poderão ser especificadas para o <search param>.
+                                               | útil em situações em que é necessário agregar informação específica para uma dada aplicação. A informação definida nestas propriedades ficará, da mesma forma, disponível no modelo representativo da metadata em memória. Podendo, por exemplo, ser utilizada na template relativa ao formulário de pesquisa e na template de resultados.
+*----------------------------------------------+---------------------------------------------------+
+                                   
+  O tipo de <container> associado a um <search param> permite definir o componente gráfico 
+  a apresentar no formulário de pesquisa.
+  Por exemplo, por vezes é desejado apresentar um campo de texto, uma select box, etc.
+  Por outro lado, o tipo de container não tem de mapear um componente de <input> do
+  HTML. Em certas situações, pode ser desejado apresentar, para um dado <search param>
+  um componente que poderá ser, por exemplo, algo criado dinamicamente via JavaScript,
+  ou um conjunto específicos de inputs, etc.
+  Nestes casos, pode-se dar um nome específico ao <container> no descriptor da pesquisa.
+  Este nome específico, deverá ser tido em conta depois na criação da template para o
+  formulário de pesquisa.
+
+
+** {container}
+  
+  Um <container> não é mais do que uma abstracção que permite identificar a forma como
+  um dado <search param> deverá ser apresentado ao utilizador no formulário de pesquisa.
+  
+  O elemento <<<container>>> permite definir:
+
+*----------------------------------------------+---------------------------------------------------+
+ <<Elemento>>                                  | <<descrição>>
+*----------------------------------------------+---------------------------------------------------+
+ label                                         | Label que deverá ser utilizado no formulário de pesquisa.
+*----------------------------------------------+---------------------------------------------------+
+ label-orientation                             | Identifica a posição (ex: LEFT, TOP, etc.) do label.
+                                               | O valor colocado neste elemento pode ser o que se desejar. Na template relativa ao formulário de pesquisa poder-se-á decidir a posição do label face ao que foi colocado neste elemento.
+*----------------------------------------------+---------------------------------------------------+
+ type                                          | Tipo de container (text, select, etc).
+*----------------------------------------------+---------------------------------------------------+
+ checked                                       | Elemento util caso o elemento 'type' seja do tipo 'select'.
+*----------------------------------------------+---------------------------------------------------+
+ disabled                                      | Identifica se o container deve ser apresentado 'disabled'.
+*----------------------------------------------+---------------------------------------------------+
+ readonly                                      | Identifica se o container deve ser 'readonly'.
+*----------------------------------------------+---------------------------------------------------+
+ size                                          | Identifica o tamanho do container.
+*----------------------------------------------+---------------------------------------------------+
+ input-size                                    | Identifica o número de caracters que podem ser introduzidos no container.
+*----------------------------------------------+---------------------------------------------------+
+ default-value-constant                        | Valor por defeito do container.
+ ou                                            |
+ default-value-expression                      |
+ ou                                            |
+ default-value-list                            |
+*----------------------------------------------+---------------------------------------------------+
+ ajax                                          | suporte para ajaxtags
+*----------------------------------------------+---------------------------------------------------+
+ validation                                    | validação que deverá ser tida em conta para este container.
+                                               | Consultar {{{validation.html}Validation}}.
+*----------------------------------------------+---------------------------------------------------+
+ {{{#event}event}}                             | Dentro deste elemento poderá ser definida informação relativa ao que deverá ser feito quando um dado tipo de evento ocorre. Normalmente, em ambiente web, este elemento é utilizado para definir chamadas a funções em JavaScript.
+*----------------------------------------------+---------------------------------------------------+
+
+
+ De seguida é apresentado o exemplo de um simples <<<search-param>>>:
+
++---+
+<search-param>
+  <name>numero</name>
+  <field>NUM_EMPREGADO</field>
+  <operator>=</operator>
+  <container>
+    <label>Número</label>
+    <type>text</type>
+    <size>160</size>
+    <input-size>10</input-size>
+  </container>
+</search-param>
++---+
+
+
+** {composite-container}
+  
+  Os <composite containers> são úteis em situações em que se pretende fragmentar
+  o valor de um dado <search param> em vários containers.
+
+  Por exemplo, se se tiver um <search param> do tipo data + hora, em que se pretende
+  apresentar ao utilizador 2 caixas de texto (uma para a data outra para a hora),
+  cada um deles devendo ser devidamente identificados no formulário de pesquisa com
+  labels diferentes, posteriormente validados de forma independente, etc.
+  O composite-container é ideal para este tipo de situações.
+
+  Um <<<composite-container>>> é composto por fragmentos (<<<fragment-container>>>).
+  Um <<<fragment-container>>> permite definir os mesmos elementos que um <<<container>>>. 
+  No entanto, tem em acréscimo o elemento <<<name>>> que deverá ser definido com o 
+  nome identificativo do fragmento.
+
+  <<Nota:>> o elemento <<<name>>> não é definido para um <<<container>>> uma vez que este
+  herda o nome directamente do <<<search-param>>>.
+  
+  Se seguida é apresentado um exemplo:
+
++---+
+<search-param>
+  <name>dataHoraInicio</name>
+  <field>DATA_HORA_PEDIDO</field>
+  <operator>=</operator>
+  <composite-container>
+    <label>Data Hora</label>
+    <validation>
+      <converter>sqltimestamp</converter>
+    </validation>
+    <fragment-container>
+      <name>data</name>
+      <label>Data Início</label>
+      <type>text</type>
+      <size>71</size>
+      <input-size>10</input-size>
+      <default-value-expression>
+        (new java.text.SimpleDateFormat("yyyy-MM-dd")).format(new Date())
+      </default-value-expression>
+      <validation>
+        <converter>date</converter>
+        <converter-properties>
+          <property>
+            <name>default-pattern</name>
+            <value>yyyy-MM-dd</value>
+          </property>
+        </converter-properties>
+      </validation>
+    </fragment-container>
+    <fragment-container>
+      <name>hora</name>
+      <label>Hora</label>
+      <type>text</type>
+      <size>57</size>
+      <input-size>8</input-size>
+      <default-value-constant>00:00:00</default-value-constant>
+      <validation>
+        <converter>date</converter>
+        <converter-properties>
+          <property>
+            <name>default-pattern</name>
+            <value>HH:mm:ss</value>
+          </property>
+        </converter-properties>
+      </validation>
+    </fragment-container>
+  </composite-container>
+</search-param>
++---+
+
+** {event}
+
+  MetaData dos eventos que poderão ser definidos dentro do elemento <<<event>>>.
+
+*------------------+---------------------------------------------------+
+ <<Elemento>>      | <<descrição>>
+*------------------+---------------------------------------------------+
+ onclick           | O botão do rato é clicado em cima do container.
+*------------------+---------------------------------------------------+
+ ondblclick        | O botão do rato foi clicado duas vezes em cima do container.
+*------------------+---------------------------------------------------+
+ onmousedown       | O botão do rato foi carregado em cima do container.
+*------------------+---------------------------------------------------+
+ onmouseup         | Uma tecla foi libertada enquanto o container  estava seleccionado.
+*------------------+---------------------------------------------------+
+ onmouseover       | O ponteiro do rato foi movido para cima do container.
+*------------------+---------------------------------------------------+
+ onmousemove       | O ponteiro do rato foi movido dentro do container.
+*------------------+---------------------------------------------------+
+ onmouseout        | O ponteiro do rato foi movido para fora do container.
+*------------------+---------------------------------------------------+
+ onfocus           | O container recebeu o focus.
+*------------------+---------------------------------------------------+
+ onblur            | Quando o container perde o focus.
+*------------------+---------------------------------------------------+
+ onkeypress        | Uma tecla foi premida e libertada enquanto o container está seleccionado.
+*------------------+---------------------------------------------------+
+ onkeydown         | O botão do rato foi carregado em cima do container.
+*------------------+---------------------------------------------------+
+ onkeyup           | Uma tecla foi libertada enquanto o container  estava seleccionado.
+*------------------+---------------------------------------------------+
+ onchange          | Quando o valor do container é alterado.
+*------------------+---------------------------------------------------+
+
+
+* {result-params}
+
+  O elemento <<<result-params>>> é utilizado para definir todos os <result params>
+  (campos de retorno) para uma dada pesquisa.
+
+  Um <<<result-param>>> permite definir:
+
+*-----------------------+---------------------------------------------------+
+ <<Elemento>>           | <<descrição>>
+*-----------------------+---------------------------------------------------+
+ name                   | Nome identificador do <result param>.
+*-----------------------+---------------------------------------------------+
+ search-label           | Label do result param.
+                        | Por vezes, em situações em que se permite seleccionar os campos de retorno em <runtime>, desejam-se labels diferentes. Um que é utilizado para na selecção (<<<search-label>>>) e outro que é utilizado no resultado da pesquisa (<<<result-label>>>).
+                        | Se o não se desejar distinguir ambos os labels ou se funcionalidade de selecção dos campos de retorno em <runtime> não é necessária, basta definir o <<<search-label>>>.
+*-----------------------+---------------------------------------------------+
+ result-label           | Ver descrição anterior (<<<search-label>>>).
+*-----------------------+---------------------------------------------------+
+ {{{#fields}fields}}    | Campo ou campos da base de dados associados ao result param.
+*-----------------------+---------------------------------------------------+
+ align                  | Identifica como o resultado deverá ser alinhado.
+*-----------------------+---------------------------------------------------+
+ width                  | Comprimento utilizado para apresentar o valor do <result param>.
+*-----------------------+---------------------------------------------------+
+ height                 | Altura utilizada para apresentar o valor do <result param>.
+*-----------------------+---------------------------------------------------+
+ header-style           | Estilo (em ambiente web, corresponderá à classe CSS) a utilizar para apresentar o header do <result param>.
+*-----------------------+---------------------------------------------------+
+ value-style            | Estilo (em ambiente web, corresponderá à classe CSS) a utilizar para apresentar o valor do <result param>.
+*-----------------------+---------------------------------------------------+
+ formatter              | Formatador a utilizar para formatar o valor do <result param>.
+                        | Para obter informação detalhado sobre formatadores consulte o link {{{format.html}format}}.
+*-----------------------+---------------------------------------------------+
+ exporter-formatter     | Formatador a utilizar no pelo exportador para formatar o valor do <result param>.
+                        | Para obter informação detalhado sobre formatadores consulte o link {{{format.html}format}}.
+*-----------------------+---------------------------------------------------+
+ properties             | Propriedades dinâmicas que poderão se especificadas para o <result param>.
+                        | Estas propriedades poderão, por exemplo, ser posteriormente utilizadas na template que apresenta os resultados das pesquisa.
+*-----------------------+---------------------------------------------------+
+
+
+** {fields}
+
+  Cada <result param> pode mapear uma ou mais colunas de uma tabela ou view na 
+  base de dados.
+  
+  Quando a informação a a apresentar corresponde a mais do que uma coluna, basta
+  especificar o nome de cada uma das colunas.
+  Por exemplo:
+
++---+
+<result-param>
+  <name>acDesignacao</name>
+  <search-label>Area de Central</search-label>
+  <fields>
+    <field>GRP_REDE</field>
+    <field>REDE</field>
+    <field>ESTACAO</field>
+    <field>AC_DESIG</field>
+  </fields>
+  <formatter>
+    <name>message</name>
+    <pattern>{0}{1}{2} {3}</pattern>
+  </formatter>
+</result-param>
++---+
+
+  <<Nota:>> Sempre que se especifica mais do que uma <<<field>>> é definido 
+  também um <<<formatter>>> de forma a formatar a forma como o array de valores 
+  deverá ser apresentado.
+  Neste exemplo foi utilizado o formatador <<<message>>> que permite criar
+  uma string a partir de um array de strings. Um outro formatador específico
+  pode ser criado e utilizado na pesquisa.
+  Para mais informação sobre formatadores consulte o link 
+  {{{format.html}format}}.
+
+
+* {required-result-params}
+
+  Os <required result params> são, na realidade, <result params> que não são
+  apresentados nos resultados das pesquisas, mas que são utilizados para outro
+  tipo de operações, como, por exemplo, a captura de novos dados a partir de
+  um dado resultado.
+
+  Um exemplo poderá ser cada resultado de uma pesquisa retornar também um 
+  identificador que permita capturar os detalhes de um dado resultado.
+  Este identificador poderia ser definido da seguinte forma:
+
++---+
+<required-result-params>
+  <required-result-param>
+    <name>id</name>
+    <fields>
+      <field>ID</field>
+    </fields>
+  </required-result-param>
+</required-result-params>
++---+
+
+
+* {selected-result-params}
+
+  Quando se deseja a possibilidade de seleccionar os campos de retorno em
+  <runtime>, então este elemento é útil uma vez que permite definir quais
+  os campos de retorno que devem ficar seleccionados por defeito para uma
+  dada pesquisa (o utilizador pode depois alterar esta seleccção).
+  Por defeito, se este elemento não for definido no descriptor da pesquisa,
+  todos os campos de retorno são seleccionados.
+
++---+
+<selected-result-params>
+  <selected-result-param>nome</selected-result-param>
+  <selected-result-param>id</selected-result-param>
+</selected-result-params>
++---+
+
+
+* {selected-result-params-order}
+
+  Este elemento permite definir a ordem pela qual os resultados devem ser
+  devolvidos numa pesquisa.
+
++---+
+<selected-result-params-order>
+  <selected-result-param-order>
+    <name>nome</name>
+    <order-type>asc</order-type>
+  </selected-result-param-order>
+</selected-result-params-order>
++---+
+
+
+
+DTD
+
+  Este <descriptor> é constituído pelos seguintes elementos:
+
++---+
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!--
+     DTD Search MetaData 1.0
+
+     Para suportar a validação do teu ficheiro de configuração, inclui
+     o seguinte DOCTYPE no início do teu ficheiro XML (depois da declaração 
+     "xml"):
+
+     <!DOCTYPE search-metadata PUBLIC 
+               "-//Maisis//DTD Search MetaData 1.5//EN" 
+               "http://www.maisis.pt/search/dtds/search-metadata_1_5.dtd">
+-->
+
+<!ENTITY % script 
+  "#PCDATA">
+
+<!ENTITY % boolean
+  "#PCDATA">
+
+<!ELEMENT search-metadata
+  (name,
+   label,
+   description,
+   search-engine-class?,
+   data-source?,
+   search-result-exporter?,
+   (table-source|sql-template),
+   properties?,
+   search-params?,
+   result-params,
+   required-result-params*,
+   selected-result-params*,
+   selected-result-params-order*)>
+
+<!ELEMENT search-result-exporter
+  (class, 
+  template,
+  is-velocity-template)>
+
+<!ELEMENT search-params
+  ((search-param | dynamic-search-params)+,
+  search-sql-fragment?)>
+
+<!ELEMENT result-params
+  (result-param | composite-result-param | dynamic-result-params)+>
+
+<!ELEMENT required-result-params
+  (required-result-param | dynamic-required-result-params)+>
+
+<!ELEMENT selected-result-params
+  (selected-result-param)+>
+
+<!ELEMENT selected-result-params-order
+  (selected-result-param-order)+>
+
+<!ELEMENT selected-result-param-order
+  (name, order-type?)>
+
+<!ELEMENT search-param
+  (name,
+   field,
+   operator,
+   (composite-container|container),
+   properties?)>
+
+<!ELEMENT search-sql-fragment
+  (name,
+   value?)>
+
+<!ELEMENT properties
+  (property)+>
+
+<!ELEMENT property
+  (name, value)>
+
+<!ELEMENT dynamic-search-params
+  EMPTY>
+
+<!ELEMENT dynamic-result-params
+  EMPTY>
+
+<!ELEMENT dynamic-required-result-params
+  EMPTY>
+
+<!ATTLIST dynamic-search-params
+  class CDATA #REQUIRED>
+
+<!ATTLIST dynamic-result-params
+  class CDATA #REQUIRED>
+
+<!ATTLIST dynamic-required-result-params
+  class CDATA #REQUIRED>
+
+<!ELEMENT composite-container
+  (label?,
+   label-orientation?,
+   validation?,
+   formatter?,
+   fragment-container+)>
+
+<!ELEMENT container
+  (label?,
+   label-orientation?,
+   type?,
+   checked?,
+   disabled?,
+   readonly?,
+   size?,
+   input-size?,
+   (default-value-constant | default-value-expression | default-value-list)?,
+   ajax?,
+   validation?,
+   event?)>
+
+<!ELEMENT fragment-container
+  (name,
+   label?,
+   label-orientation?,
+   type?,
+   checked?,
+   disabled?,
+   readonly?,
+   size?,
+   input-size?,
+   (default-value-constant | default-value-expression | default-value-list)?,
+   ajax?,
+   validation?,
+   event?)>
+
+<!ELEMENT event
+  (onclick?,
+   ondblclick?,
+   onmousedown?,
+   onmouseup?,
+   onmouseover?,
+   onmousemove?,
+   onmouseout?,
+   onfocus?,
+   onblur?,
+   onkeypress?,
+   onkeydown?,
+   onkeyup?,
+   onchange?)>
+
+<!ELEMENT default-value-list
+  (sql|constants)>
+
+<!ELEMENT ajax
+  (sql,
+   source,
+   parameters)>
+
+<!ELEMENT parameters
+  (parameter+)>
+
+<!ELEMENT constants
+  (constant+)>
+
+<!ELEMENT constant
+  (key,
+   value?,
+   selected?)>
+
+<!ELEMENT sql 
+  (data-source?,
+   statement,
+   column-mapping?,
+   selected-keys?)>
+
+<!ELEMENT column-mapping 
+  (key,
+   value)>
+
+<!ELEMENT selected-keys 
+  (key+)>
+
+<!ELEMENT result-param
+  (name,
+   selectable?,
+   search-label?,
+   result-label?,
+   fields,
+   align?,
+   width?,
+   height?,
+   header-style?,
+   value-style?,
+   formatter?,
+   exporter-formatter?,
+   properties?)>
+
+<!ELEMENT composite-result-param
+  (name,
+   selectable?,
+   search-label?,
+   result-label?,
+   align?,
+   width?,
+   height?,
+   header-style?,
+   result-param+,
+   composite-result-param*,
+   properties?)>
+
+<!ELEMENT required-result-param
+  (name,
+   fields,
+   properties?,
+   depends?,
+   unless?)>
+    
+<!ELEMENT formatter
+  (name?, pattern?, null-value?)>
+
+<!ELEMENT exporter-formatter
+  (name?, pattern?, null-value?)>
+
+<!ELEMENT validation
+  (converter?, 
+   converter-properties?,
+   required?, 
+   min-length?, 
+   max-length?, 
+   min-value?, 
+   max-value?, 
+   regex?, 
+   expression?)>
+
+<!ELEMENT converter-properties
+  (property+)>
+
+<!ELEMENT fields
+  (field+)>
+
+<!ELEMENT selected                 (%boolean;)>
+<!ELEMENT required                 (%boolean;)>
+<!ELEMENT converter                (#PCDATA)>
+<!ELEMENT min-length               (#PCDATA)>
+<!ELEMENT max-length               (#PCDATA)>
+<!ELEMENT min-value                (#PCDATA)>
+<!ELEMENT max-value                (#PCDATA)>
+<!ELEMENT regex                    (#PCDATA)>
+<!ELEMENT expression               (#PCDATA)>
+<!ELEMENT name                     (#PCDATA)>
+<!ELEMENT value                    (#PCDATA)>
+<!ELEMENT description              (#PCDATA)>
+<!ELEMENT search-engine-class      (#PCDATA)>
+<!ELEMENT data-source              (#PCDATA)>
+<!ELEMENT table-source             (#PCDATA)>
+<!ELEMENT sql-template             (#PCDATA)>
+<!ELEMENT field                    (#PCDATA)>
+<!ELEMENT operator                 (#PCDATA)>
+<!ELEMENT class                    (#PCDATA)>
+<!ELEMENT template                 (#PCDATA)>
+<!ELEMENT pattern                  (#PCDATA)>
+<!ELEMENT join-pattern             (#PCDATA)>
+<!ELEMENT join-token               (#PCDATA)>
+<!ELEMENT input-size               (#PCDATA)>
+<!ELEMENT label                    (#PCDATA)>
+<!ELEMENT label-orientation        (#PCDATA)>
+<!ELEMENT default-value-constant   (#PCDATA)>
+<!ELEMENT default-value-expression (#PCDATA)>
+<!ELEMENT search-label             (#PCDATA)>
+<!ELEMENT result-label             (#PCDATA)>
+<!ELEMENT displayable              (#PCDATA)>
+<!ELEMENT align                    (#PCDATA)>
+<!ELEMENT size                     (#PCDATA)>
+<!ELEMENT width                    (#PCDATA)>
+<!ELEMENT height                   (#PCDATA)>
+<!ELEMENT depends                  (#PCDATA)>
+<!ELEMENT unless                   (#PCDATA)>
+<!ELEMENT selected-result-param    (#PCDATA)>
+<!ELEMENT order-type               (#PCDATA)>
+<!ELEMENT type                     (#PCDATA)>
+<!ELEMENT checked                  (#PCDATA)>
+<!ELEMENT disabled                 (#PCDATA)>
+<!ELEMENT readonly                 (#PCDATA)>
+<!ELEMENT is-velocity-template     (#PCDATA)>
+<!ELEMENT selectable               (#PCDATA)>
+<!ELEMENT statement                (#PCDATA)>
+<!ELEMENT key                      (#PCDATA)>
+<!ELEMENT source                   (#PCDATA)>
+<!ELEMENT parameter                (#PCDATA)>
+<!ELEMENT header-style             (#PCDATA)>
+<!ELEMENT value-style              (#PCDATA)>
+<!ELEMENT null-value               (#PCDATA)>
+
+<!ELEMENT onclick                  (%script;)>
+<!ELEMENT ondblclick               (%script;)>
+<!ELEMENT onmousedown              (%script;)>
+<!ELEMENT onmouseup                (%script;)>
+<!ELEMENT onmouseover              (%script;)>
+<!ELEMENT onmousemove              (%script;)>
+<!ELEMENT onmouseout               (%script;)>
+<!ELEMENT onfocus                  (%script;)>
+<!ELEMENT onblur                   (%script;)>
+<!ELEMENT onkeypress               (%script;)>
+<!ELEMENT onkeydown                (%script;)>
+<!ELEMENT onkeyup                  (%script;)>
+<!ELEMENT onchange                 (%script;)>
+
++---+

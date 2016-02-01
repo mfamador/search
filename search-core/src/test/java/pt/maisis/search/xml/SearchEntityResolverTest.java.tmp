@@ -1,0 +1,70 @@
+package pt.maisis.search.xml;
+
+import junit.framework.TestCase;
+
+import org.apache.commons.digester.Digester;
+import org.xml.sax.InputSource;
+
+
+/**
+ * Testes para a classe {@link SearchEntityResolver}.
+ *
+ * @version 1.0
+ */
+public class SearchEntityResolverTest extends TestCase {
+
+    public void testFileInClasspath() {
+        try {
+            SearchEntityResolver resolver = 
+                new SearchEntityResolver(new Digester());
+          
+            // caminho relativo
+            InputSource source = resolver.resolveEntity
+                (null, "file:/test-search-params.xml");
+            assertNotNull(source.getSystemId());
+
+            // caminho absoluto
+            source = resolver.resolveEntity
+                (null, "file:test-search-params.xml");
+            assertNotNull(source.getSystemId());
+          
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    public void testFileInFilesystem() {
+        try {
+            SearchEntityResolver resolver = 
+                new SearchEntityResolver(new Digester());
+          
+            // caminho relativo
+            InputSource source = resolver.resolveEntity
+                (null, "file:target/test-classes/test-search-params.xml");
+            assertNotNull(source.getSystemId());
+
+            // caminho absoluto
+            source = resolver.resolveEntity
+                (null, "file:" + System.getProperty("user.dir")
+                 + "/target/test-classes/test-search-params.xml");
+            assertNotNull(source.getSystemId());
+
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    public void testFileInexistent() {
+        try {
+            SearchEntityResolver resolver = 
+                new SearchEntityResolver(new Digester());
+
+            InputSource source = resolver.resolveEntity
+                (null, "file:xpto/test-search-params.xml");
+            assertNull(source.getSystemId());
+          
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+}

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE search-config PUBLIC 
+"-//Maisis//DTD Search Configuration 1.5//EN" 
+"http://www.maisis.pt/search/dtds/search-config_1_5.dtd">
+
+
+<search-config>
+
+  <data-source-name>java:comp/env/jdbc/SearchEngineDBPool</data-source-name>
+
+  <search-engine-class>pt.maisis.search.dao.db.SearchEngineDaoImpl</search-engine-class>
+
+  <search-engine-metadata-class>pt.maisis.search.dao.xml.SearchEngineMetaDataDaoImpl</search-engine-metadata-class>
+
+  <search-descriptors>
+    <descriptor>test-search.xml</descriptor>
+  </search-descriptors>
+
+</search-config>

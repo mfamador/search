@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!DOCTYPE report PUBLIC 
+"-//JFreeReport//DTD report definition//EN//simple/version 0.8.5"
+"http://jfreereport.sourceforge.net/report-085.dtd">
+
+<report
+    name="search" pageformat="A4"
+    topmargin="10" leftmargin="35" bottommargin="35" rightmargin="35">
+
+  <configuration>
+    <property name="org.jfree.report.ResourceBundle">search-example</property>
+  </configuration>
+
+  ##---------------------------------#
+  ##                                 #
+  ## REPORT HEADER                   #
+  ##                                 #
+  ##---------------------------------#
+
+  <reportheader fontname="Verdana" fontsize="8">
+    <imageref x="37%" y="0" height="91" width="131" src="logo.gif"/>
+    <label x="0" y="71" width="100%" height="20" alignment="center" color="#555555" fontsize="12">Search Framework / JFreeReport</label>
+    <date-field x="0" y="91"  width="100%" height="10" alignment="center" fieldname="report.date"/>
+    <label x="0" y="111" width="100%" height="30" color="#555555" alignment="left">Simples exemplo que pretende mostrar a forma como integrar o JFreeReport na Search Framework. Este exemplo pode ser utilizado como ponto de partida, devendo ser alterado em função das necessidades do sistema em causa.</label>
+  </reportheader>
+
+  ##---------------------------------#
+  ##                                 #
+  ## PAGE FOOTER                     #
+  ##                                 #
+  ##---------------------------------#
+
+  #if ($format == 'pdf')
+  <pagefooter height="24" onfirstpage="true" onlastpage="true" fontname="Serif" fontstyle="plain" fontsize="9">
+    <date-field fieldname="report.date" format="dd-MM-yyyy" x="0" y="4" width="25%" height="18" alignment="left"/>
+    <string-field fieldname="pageXofY" x="75%" y="4" width="25%" height="18" alignment="right"/>
+  </pagefooter>
+  #end
+
+  ##---------------------------------#
+  ##                                 #
+  ## GROUPS                          #
+  ##                                 #
+  ##---------------------------------#
+
+  <groups>
+    <group name="global">
+      <groupheader fontname="Verdana" fontsize="8" vertical-alignment="middle" repeat="true">
+        #macro (columnHeader $results $x $y) 
+          #foreach ($result in $results)
+        
+            <rectangle 
+                x="$x" y="$y" width="$result.width" height="$result.height"
+                color="#eeeeee" fill="true" draw="false"/>
+            <rectangle
+                x="$x" y="$y" width="$result.width" height="$result.height"
+                color="#aaaaaa" weight="0.5" fill="false" draw="true"/>
+            <resource-label
+		x="$x" y="$y" width="$result.width" height="$result.height"
+		color="#000000" alignment="center">$result.resultLabel</resource-label>
+            
+            #if ($result.composite)
+              #set ($nexty = $y + 15)
+              #columnHeader ($result.children $x $nexty)
+            #else
+              #set ($x = $x + $result.width)
+            #end
+          #end
+        #end
+
+        #columnHeader ($resultMetaData 0 0)
+      </groupheader>
+    </group>
+  </groups>
+
+  ##---------------------------------#
+  ##                                 #
+  ## ITEMS                           #
+  ##                                 #
+  ##---------------------------------#
+
+  <items fontname="Verdana" fontsize="8" vertical-alignment="middle" height="15">
+    #set ($x = 0)
+    #foreach ($result in $expandedResultMetaData)
+
+    <rectangle 
+        x="$x" y="0" width="$result.width" height="15" 
+        color="#aaaaaa" weight="0.5" fill="false" draw="true"/>
+    
+    <$result.fieldType name="$result.name"
+        x="$x" y="0" width="$result.width" height="15" 
+        alignment="$result.align" fieldname="$result.name"
+        #if ($result.formatPatternAvailable) format="$result.formatPattern" #end/>
+
+    #set ($x = $x + $result.width)
+    #end
+  </items>
+
+
+  ##---------------------------------#
+  ##                                 #
+  ## FUNCTIONS                       #
+  ##                                 #
+  ##---------------------------------#
+
+  <functions>
+    <function class="org.jfree.report.function.PageOfPagesFunction" name="pageXofY">
+      <properties>
+	<property name="format">{0}/{1}</property>
+      </properties>
+    </function>
+  </functions>
+</report>

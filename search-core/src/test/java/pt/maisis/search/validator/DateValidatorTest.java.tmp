@@ -1,0 +1,41 @@
+package pt.maisis.search.validator;
+
+import junit.framework.TestCase;
+
+import java.util.Date;
+import java.util.Calendar;
+import java.text.DateFormat;
+
+/**
+ * Testes para a classe {@link DateValidator}.
+ *
+ * @version 1.0
+ */
+public class DateValidatorTest extends TestCase {
+
+    public void testDateValidator() {
+        DateValidator validator = new DateValidator();
+        validator.setPattern("dd-MM-yyyy");
+
+        assertTrue(validator.isValid("10-10-2000"));
+
+        assertFalse(validator.isValid("invalid date"));
+
+        Calendar c = Calendar.getInstance();
+        c.clear();
+        c.set(Calendar.DAY_OF_MONTH, 10);
+        c.set(Calendar.MONTH, 9); // zero based
+        c.set(Calendar.YEAR, 2000);
+                
+        assertEquals(c.getTime(), validator.parse("10-10-2000"));
+
+        // use default join (concat strings)
+        validator.setPattern("ddMMyyyy");
+        assertEquals(c.getTime(), validator.parse(new String[] {"10", "10", "2000"}));
+        
+        // custom join pattern
+        validator.setPattern("dd-MM-yyyy");
+        validator.setJoinPattern("{0}-{1}-{2}");
+        assertEquals(c.getTime(), validator.parse(new String[] {"10", "10", "2000"}));
+    }
+}

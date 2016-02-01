@@ -1,0 +1,715 @@
+﻿Exemplo
+
+  Para melhor exemplificar as funcionalidades base da <framework> de 
+  pesquisa foi criado um pequeno exemplo.
+
+  <<Nota:>> A documentação aqui apresentada é uma versão simplificada dos 
+  exemplos disponíveis para {{{releases.html}download}}.
+
+  O exemplo escolhido consiste na criação de um serviço que permite
+  pesquisar informação relativa aos utilizadores de um dado sistema.
+
+  Os requisitos para esta pesquisa são os seguintes:
+
+  [[1]] Os utilizadores podem ser pesquisados pelo <<nome>> e <<tipo>>
+        (tipo de utilizador). Nenhum deles deve ser de preenchimento obrigatório.
+
+  [[2]] Pretende-se que os campos de retorno sejam a <<nome>>, <<tipo>>,
+        <<número>> e <<telefone>>.
+
+  [[3]] Para além destes 4 campos de retorno, pretende-se que a framework 
+        também retorne o campo <<id>> (identificador do utilizador). Este id não 
+        é para ser apresentado em conjunto com os restantes campos de retorno,
+        mas sim para possibilitar a captura dos detalhes de um dado utilizador.
+        Para tal, este campo de retorno será utilizado na query de um pedido
+        HTTP.
+
+  []
+
+
+* Fases
+  
+  Normalmente, as fases envolvidas na criação de uma nova pesquisa, utilizando 
+  esta framework, resumem-se nas seguintes:
+
+  [[1]] Criação do {{{#XML_Descriptor}descriptor XML}} da pesquisa.
+
+  [[2]] Criação/configuração do ficheiro {{{#Search_Config}search-config.xml}}.
+
+  [[3]] Criação/configuração do ficheiro {{{#Web_Config}web-search-config.xml}}.
+
+  []
+
+
+  <<Nota:>> A criação dos ficheiros <<<search-config.xml>>> e 
+  <<<web-search-config.xml>>> é feita uma só vez (assim que a primeira pesquisa 
+  é criada). Assim que vão sendo criadas novas pesquisas, estes dois ficheiros 
+  devem ser alterados de forma a incluir os detalhes dessas novas pesquisas.
+
+
+* {XML Descriptor}
+
+  Para satisfazer os requisitos anteriormente descritos é 
+  necessário, em primeiro lugar, criar um ficheiro de configuração para a 
+  pesquisa (<search XML descriptor>). Vamos dar o nome <utilizadores-search.xml>
+  a este <descriptor XML>.
+
+  Exemplo do <descriptor> XML para esta pesquisa:
+        
++---+
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE search-metadata PUBLIC 
+"-//Maisis//DTD Search MetaData 1.5//EN" 
+"http://www.maisis.pt/search/dtds/search-metadata_1_5.dtd">
+
+<search-metadata>
+  <name>utilizadores</name>
+  <label>Pesquisa de Utilizadores</label>
+  <description>Pesquisa Utilizadores...</description>
+  <table-source>UTILIZADOR_VIEW</table-source>
+          
+  <!-- search params -->
+  <search-params>
+    <search-param>
+      <name>nome</name>
+      <field>upper(NOME)</field>
+      <required>false</required>
+      <operator>LIKE</operator>
+      <container>
+        <label>Nome</label>
+        <type>text</type>
+        <size>360</size>
+        <input-size>50</input-size>
+        <validation>
+          <converter>sqllike</converter>
+        </validation>
+      </container>
+    </search-param>
+
+    <search-param>
+      <name>tipoUtilizador</name>
+      <field>ID_TIPO_UTILIZADOR</field>
+      <required>false</required>
+      <operator>=</operator>
+      <container>
+        <label>Tipo</label>
+        <type>select</type>
+        <size>360</size>
+        <default-value-list>
+          <sql>
+            <statement>select id, nome from tipo_utilizador</statement>
+          </sql>
+        </default-value-list>
+      </container>
+    </search-param>
+  </search-params>
+
+  <!-- result params -->
+  <result-params>
+
+    <result-param>
+      <name>nome</name>
+      <search-label>Nome</search-label>
+      <fields>
+        <field>NOME</field> 
+      </fields>
+      <align>left</align>
+    </result-param>
+
+    <result-param>
+      <name>numEmpregado</name>
+      <search-label>Número</search-label>
+      <fields>
+        <field>NUM_EMPREGADO</field> 
+      </fields>
+      <align>right</align>
+    </result-param>
+    
+    <result-param>
+      <name>tipoUtilizador</name>
+      <search-label>Tipo</search-label>
+      <fields>
+        <field>TIPO</field> 
+      </fields>
+      <align>center</align>
+    </result-param>
+                         
+    <result-param>
+      <name>telefone</name>
+      <search-label>Telefone</search-label>
+      <fields>
+        <field>TELEFONE</field> 
+      </fields>
+      <align>right</align>
+    </result-param>
+  </result-params>
+          
+  <!-- required result params -->
+  <required-result-params>
+    <required-result-param>
+      <name>id</name>
+      <fields>
+        <field>ID</field>
+      </fields>
+    </required-result-param>
+  </required-result-params>
+          
+</search-metadata>
++---+
+
+
+  <<Nota:>> para um detalhe exaustivo dos elementos constituíntes do documento 
+  XML ver {{{../search-core/search-metadata.html}Search Engine MetaData}}.
+
+  Neste exemplo, foram definidos dois critérios de pesquisa (<search-params>), 
+  quatro campos de retorno (<result-params>) e, finalmente, um campo de retorno 
+  que é necessário no resultado das pesquisas (<required-result-param>). 
+
+
+** Search Metadata
+
++---+
+<search-metadata>
+  <name>utilizadores</name>
+  <label>Pesquisa de Utilizadores</label>
+  <description>Pesquisa Utilizadores...</description>
+  <table-source>UTILIZADOR_VIEW</table-source>
+</search-metadata>
++---+
+
+
+*--------------+---------------------------------------------------+
+ <<Elemento>>  | <<Descrição>>
+*--------------+---------------------------------------------------+
+ name          | Nome identificador da pesquisa.
+*--------------+---------------------------------------------------+
+ label         | Label da pesquisa. Poderá ser utilizado em diversas situações. Em ambiente web, a mais comum utilização é no título das páginas de pesquisa e resultados.
+*--------------+---------------------------------------------------+
+ description   | Descrição da pesquisa.
+*--------------+---------------------------------------------------+
+ table-source  | Elemento utilizado para especificar o nome da tabela ou view a utilizar pela framework como fonte de dados.
+*--------------+---------------------------------------------------+
+
+
+** Search Params
+
+  Elemento que agrega todos os critérios de pesquisa.
+
++---+
+<!-- search params: nome e tipo -->
+
+<search-params>
+  <search-param>
+    <name>nome</name>
+    <field>upper(NOME)</field>
+    <required>false</required>
+    <operator>LIKE</operator>
+    <container>
+      <label>Nome</label>
+      <type>text</type>
+      <size>360</size>
+      <input-size>50</input-size>
+      <validation>
+        <converter>sqllike</converter>
+      </validation>
+    </container>
+  </search-param>
+
+  <search-param>
+    <name>tipoUtilizador</name>
+    <field>ID_TIPO_UTILIZADOR</field>
+    <required>false</required>
+    <operator>=</operator>
+    <container>
+      <label>Tipo</label>
+      <type>select</type>
+      <size>360</size>
+      <default-value-list>
+        <sql>
+          <statement>select id, nome from tipo_utilizador</statement>
+        </sql>
+      </default-value-list>
+    </container>
+  </search-param>
+</search-params>
++---+
+
+*--------------+---------------------------------------------------+
+ <<Elemento>>  | <<Descrição>>
+*--------------+---------------------------------------------------+
+ search-params | Elemento que agrega todos os critérios de pesquisa.
+*--------------+---------------------------------------------------+
+ search-param  | Critério de pesquisa propriamente dito. Este elemento agrega uma série de elementos que permitem identificar o seu nome, o campo da base de dados associado, se é, ou não, de preenchimento obrigatório, o tipo de operador a utilizar na comparação, e finalmente o tipo de container a apresentar ao utilizador.
+*--------------+---------------------------------------------------+
+ name          | Nome identificativo do critério de pesquisa.
+*--------------+---------------------------------------------------+
+ field         | Nome da coluna da tabela/view identificada no elemento table-source.
+*--------------+---------------------------------------------------+
+ required      | Indica se o preenchimento do critério de pesquisa é obrigatório.
+*--------------+---------------------------------------------------+
+ operator      | Tipo de operador a utilizar na comparação deste critério de pesquisa.
+               | Neste momento são suportados todos os operadores utilizados em statments SQL (ex: <in>, <between>, =, <like>, etc).
+*--------------+---------------------------------------------------+
+ container     | O tipo de container corresponde ao componente gráfico que será utilizado para apresentar ao utilizador de forma que o utilizador possa introduzir a informação desejada. Mais à  frente este conceito será explicado um pouco melhor.
+*--------------+---------------------------------------------------+
+ label         | Label do critério de pesquisa a apresentar no formulário.
+*--------------+---------------------------------------------------+
+ type          | Este elemento identifica o tipo de container. 
+               | No formulário de pesquisa, cada critério é apresentado ao utilizador utilizando <texts>, <selects>, etc. No entanto, poderemos desejar apresentar um tipo de container pré-fabricado, isto é, um componente gráfico (específico do interface da aplicação em causa) que permita capturar input do utilizador (fora do âmbito deste exemplo).
+*--------------+---------------------------------------------------+
+ size          | Tamanho do container.
+*--------------+---------------------------------------------------+
+ input-size    | Tamanho do <input> aceite pelo container.
+*--------------+---------------------------------------------------+
+ validation    | Os dados introduzidos pelo utilizador devem ser validados e, por vezes, convertidos. Este elemento permite definir a classe e o padrão de formatação, caso necessário, a utilizar relativamente à  informação introduzida pelo utilizador. Para mais informação consulte o link {{{validation.html}Validation}}.
+*--------------+---------------------------------------------------+
+
+
+  <<Nota:>> Por questões de simplificação, alguns elementos XML não foram 
+  referidos na tabela anterior. Para obter mais informação consulte o link 
+  {{{../search-core/search-metadata.html}Search MetaData}}.
+
+
+** Result Params
+
++---+
+
+<!-- result params: nome, numEmpregado, tipoUtilizador e telefone -->
+
+<result-params>
+  <result-param>
+     <name>nome</name>
+     <search-label>Nome</search-label>
+     <fields>
+       <field>NOME</field> 
+     </fields>
+     <align>left</align>
+   </result-param>
+
+   <result-param>
+     <name>numEmpregado</name>
+     <search-label>Número</search-label>
+     <fields>
+       <field>NUM_EMPREGADO</field> 
+     </fields>
+     <align>right</align>
+   </result-param>
+   
+   <result-param>
+     <name>tipoUtilizador</name>
+     <search-label>Tipo</search-label>
+     <fields>
+       <field>TIPO</field> 
+     </fields>
+     <align>center</align>
+   </result-param>
+                        
+   <result-param>
+     <name>telefone</name>
+     <search-label>Telefone</search-label>
+     <fields>
+       <field>TELEFONE</field> 
+     </fields>
+     <align>right</align>
+   </result-param>
+</result-params>
++---+
+
+
+*--------------+---------------------------------------------------+
+ <<Elemento>>  | <<Descrição>>
+*--------------+---------------------------------------------------+
+ result-params | Elemento que agrega todos os campos de retorno da pesquisa.
+*--------------+---------------------------------------------------+
+ result-param  | Campo de retorno.
+*--------------+---------------------------------------------------+
+ name          | Nome identificador do campo de retorno.
+*--------------+---------------------------------------------------+
+ search-label  | Label do campo de retorno. O facto do nome ser search-label deve-se ao facto de existirem mais tipos de labels para um campo de retorno (fora do âmbito deste exemplo).
+*--------------+---------------------------------------------------+
+ fields        | Elemento que agrega os nomes das colunas mapeadas a este campo de retorno.
+*--------------+---------------------------------------------------+
+ field         | Nome da coluna da tabela ou view identificada no elemento table-source.
+*--------------+---------------------------------------------------+
+
+
+** Required Result Params
+
+   Os <required result params> são úteis em situações em que se pretende 
+   que a <framework> de pesquisa retorne informação que não é directamente
+   apresentada ao utilizador.
+
+   Por vezes são necessários detalhes que permitem à  <framework> disponibilizar 
+   ou efectuar determinado tipo de operações que por si só não são visíveis ao 
+   utilizador.
+
+   Um exemplo poderia ser a necessidade de apresentar os resultados das pesquisas
+   numa tabela, permitindo ao utilizador a possibilidade de "clicar" num dos 
+   resultados para, por exemplo, capturar detalhes específicos da base de dados, 
+   tendo em conta um dado identificar.
+
+
++---+
+
+<!-- required result params: id -->
+
+<required-result-params>
+  <required-result-param>
+    <name>id</name>
+    <field>COD_UTILIZADOR</field>
+  </required-result-param>
+</required-result-params>
++---+
+
+
+* {Search Config}
+  
+  Depois de criado o descriptor XML para a pesquisa, é necessário dar a conhecer a 
+  pesquisa à framework. Para tal é necessário criar o ficheiro <search-config.xml>, 
+  e colocá-lo na raiz do classpath.
+  Por exemplo, em ambiente web basta colocar este ficheiro em <WEB-INF/classes>.
+
+  Por questões de simplificação, foi assumido que o ficheiro <utilizadores-search.xml>
+  também colocado no mesmo sítio que o ficheiro <search-config.xml>.
+
+  <<Nota:>> para um detalhe exaustivo dos elementos constituíntes deste 
+  documento XML ver {{{../search-core/search-config.html}Search Config}}.
+
+  Exemplo do ficheiro de configuração:
+
++---+
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE search-config PUBLIC 
+"-//Maisis//DTD Search Configuration 1.5//EN" 
+"http://www.maisis.pt/search/dtds/search-config_1_5.dtd">
+
+<search-config>
+
+  <data-source-name>java:comp/env/jdbc/SearchDBPool</data-source-name>
+
+  <search-descriptors>
+    <descriptor>utilizadores-search.xml</descriptor>
+  </search-descriptors>
+  
+</search-config>
++---+
+
+
+*-----------------------------+---------------------------------------------------+
+ <<Elemento>>                 | <<Descrição>>
+*-----------------------------+---------------------------------------------------+
+ data-source-name             | DataSource que a <framework> deve utilizar por defeito, para todas as pesquisas.
+                              | Se um dada pesquisa precisar de uma DataSource diferente, esta poderá ser definida directamente no descriptor da pesquisa.
+*-----------------------------+---------------------------------------------------+
+ search-descriptors           | Elemento que agrega todas pesquisas (descriptors XML).
+*-----------------------------+---------------------------------------------------+
+ descriptor                   | Nome do descriptor XML da pesquisa.
+*-----------------------------+---------------------------------------------------+
+
+
+* {Web Config}
+
+  Para tirar partido desta <framework> em ambiente web, é necessário ainda 
+  configurar esta pesquisa no ficheiro <web-search-config.xml>.
+  Este ficheiro deve ser criado e colocado na raiz do CLASSPATH (como o ficheiro
+  <search-config.xml>).
+
+  <<Nota:>> para um detalhe exaustivo dos elementos constituíntes deste 
+  documento XML ver 
+  {{{../search-core/web-search-config.html} Web Search Config}}.
+
+  Exemplo do ficheiro <web-search-config.xml> para a pesquisa de utilizadores:
+
++---+
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE web-search-config PUBLIC 
+          "-//Maisis//DTD Web Search Config 1.5//EN" 
+          "http://www.maisis.pt/search/dtds/web-search-config_1_5.dtd">
+
+<web-search-config>
+
+  <search 
+    name="utilizadores"
+    search-view="search.jsp"
+    result-view="search_result.jsp"
+    search-form="searchForm"
+    search-form-scope="request"
+    search-result="resultado"/>
+
+</web-search-config>
++---+
+
+
+*-----------------------------+---------------------------------------------------+
+ <<Elemento>>                 | <<Descrição>>
+*-----------------------------+---------------------------------------------------+
+ name                         | Nome da pesquisa. 
+                              | Este nome deve corresponder a uma pesquisa pré-configurada. 
+                              | No caso deste exemplo será <<utilizadores>>.
+*-----------------------------+---------------------------------------------------+
+ search-view                  | Nome da view (página web com o formulário da pesquisa) que deve ser apresentada.
+*-----------------------------+---------------------------------------------------+
+ result-view                  | Nome da view (página web) que deve ser apresentada para mostrar os resultados.
+*-----------------------------+---------------------------------------------------+
+ search-form                  | Nome do atributo (request ou sessão) em que a form (bean que é <populated> com os params de pesquisa e campos de retorno) será guardada.
+*-----------------------------+---------------------------------------------------+
+ search-form-scope            | Scope em que a form será colocada (request ou session).
+                              | Por defeito é <request>.
+*-----------------------------+---------------------------------------------------+
+ search-result                | Nome do atributo (request ou sessão) utilizado para colocar o resultado da pesquisa.
+*-----------------------------+---------------------------------------------------+
+ search-result-scope          | Scope em que o resultado será colocado (<request> ou <session>).
+                              | Por defeito é <request>.
+*-----------------------------+---------------------------------------------------+
+
+
+* Web XML
+
+  Para utilizar esta framework em ambiente web é necessário configurar duas servlets
+  no descriptor web (<web.xml>).
+  De seguida é apresentado um exemplo de como fazer essa configuração:
+
++---+
+  <!-- search servlet -->
+  <servlet>
+    <servlet-name>search</servlet-name>
+    <servlet-class>pt.maisis.search.web.SearchServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>    
+  </servlet>
+
+  <!-- prepare search servlet -->
+  <servlet>
+    <servlet-name>prepareSearch</servlet-name>
+    <servlet-class>pt.maisis.search.web.PrepareSearchServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>    
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>search</servlet-name>
+    <url-pattern>/search</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>prepareSearch</servlet-name>
+    <url-pattern>/prepareSearch</url-pattern>
+  </servlet-mapping>
++---+
+
+  A servlet <search> deve ser utilizada para efectuar pesquisas. Po outro lado
+  a servlet <prepareSearch> deve ser utilizada para preparar a form com os 
+  valores por defeito antes de apresentar o formulário ao utilizador.
+
+
+
+* Views
+
+  Depois de todas as configurações, anteriormente descritas, terem sido efectuadas
+  com sucesso, é necessário criar as páginas (views) que deverão ser utilizadas 
+  para apresentar os formulários das pesquisas e os resultados das pesquisas.
+
+  Neste exemplo optou-se por criar duas JSPs. Uma para o formulário de pesquisa
+  e outra para apresentar os resultados. 
+  
+  Para este efeito, e para facilitar o processo de integração num ambiente web, 
+  esta <framework> disponibiliza uma série de <tags> (<tag libraries>).
+  
+  Para obter mais informação sobre <tag libraries>, em particular sobre 
+  <custom tags> consulta o link 
+  {{{http://java.sun.com/products/jsp/taglibraries/index.jsp} Custom Tags}}.
+  
+
+ 
+  As <search tags> mais importantes de realçar são:
+
+*----------------------+---------------------------------------------------+
+ <<Tag>>               | <<Descrição>>
+*----------------------+---------------------------------------------------+
+ searchName            | Escreve o nome da pesquisa.
+*----------------------+---------------------------------------------------+
+ searchMetaData        | Facilita o processo de criação de formulários.
+                       | Esta <tag>, tendo em conta a metadata definida no descriptor da pesquisa, permite fazer o rendering de cada um dos critérios de pesquisa em função do tipo de containers.
+*----------------------+---------------------------------------------------+
+ searchErrorsAvailable | <Tag> utilizada para verificar se ocorreu algum erro de validação resultante do <submit> do fomulário de pesquisa.
+*----------------------+---------------------------------------------------+
+ searchErrors          | Invoca o corpo da tag para cada erro ocorrido no processo de validação do formulário de pesquisa.
+*----------------------+---------------------------------------------------+
+ searchResult          | Facilita o processo de apresentação dos resultados das pesquisas.
+*----------------------+---------------------------------------------------+
+
+
+
+* <Tag searchMetaData>
+
+  Exemplo de utilização desta <tag>:
+
++---+
+
+<%@ taglib uri="http://search.maisis.pt/taglib/search" prefix="search" %>
+
+<form action="search">
+  <table>
+    <search:searchMetaData search="${param.search}" numberColumns="1">
+      
+      <search:startRow>
+        <tr>
+      </search:startRow>
+      
+      <search:container type="text">
+        <td>
+          ${container.label}<br/>
+          <input 
+             type="text" name="searchParam(${container.name})" id="${container.name}"
+             style="width:${container.size}" maxlength="${container.inputSize}" 
+             onblur="${container.onBlur}" value="${value}"/>
+        </td>
+      </search:container>
+  
+      <search:container type="hidden">
+        <input 
+          type="hidden" name="searchParam(${container.name})" 
+          id="${container.name}"/>
+      </search:container>
+  
+      <search:endRow>
+        </tr>
+      </search:endRow>
+  
+    </search:searchMetaData>
+  </table>
+</form>
++---+
+
+  Como se verifica neste exemplo, esta <tag> tem várias <tags> como filhas (ex: 
+  <startRow>, <startComposite>, <container>, etc).
+
+  Neste caso em concreto o que é importante realçar é que para cada tipo de container,
+  especificado no descriptor da pesquisa, é necessário disponibilizar a sua apresentação
+  recorrendo à tag <container>.
+
+  Por exemplo, no descriptor da pesquisa utilizadores temos dois tipos de containers,
+  ambos do tipo <text>. Ao utilizar esta tag numa JSP tem-se a oportunidade de definir
+  o <layout> desse mesmo container. 
+
++---+  
+<search:container type="text">
+  <td>
+    ${container.label}<br/>
+    <input 
+       type="text" name="searchParam(${container.name})" id="${container.name}"
+       style="width:${container.size}" maxlength="${container.inputSize}" 
+       onblur="${container.onBlur}" value="${value}"/>
+  </td>
+</search:container>
++---+  
+
+  Por outro lado, pode-se definir nos <descriptors> das pesquisas tipos específicos de
+  <containers> que só dependem da aplicação em causa. No entanto, este tipo de detalhes
+  está fora do âmbito deste exemplo.
+
+  <<Nota:>> neste exemplo, por questões de simplificação, optou-se por não 
+  permitir ao utilizador seleccionar os campos de retorno dinamicamente. Isto é,
+  por defeito, todos os campos de retorno especificados no descriptor da 
+  pesquisa serão devolvidos nos resultados das pesquisas.
+
+
+* <Tag searchErrorsAvailable e searchErrors>
+
+  A tag <searchErrorsAvailable> permite verificar se ocorreu algum erro numa 
+  dada pesquisa. Esta tag é, normalmente, utilizada em conjunto com a tag 
+  <searchErrors> que, por sua vez, é utilizada para apresentar os erros 
+  ocorridos.
+  
+  Simples exemplo:
+
++---+  
+  <search:searchErrorsAvailable>
+    <search:searchErrors>
+      ${error}<br/>
+    </search:searchErrors>
+  </search:searchErrorsAvailable>
+
+  <form action="search">
+    ...
+    <search:searchMetaData ...>
+        ...
+    </search:searchMetaData>
+    ...
+  </form>
++---+  
+
+
+
+* <Tag searchResult>
+  
+  Para apresentar os resultados das pesquisas poderá adoptar-se por diversas 
+  possibilidades. A possibilidade mais simples é a utilização da <tag> 
+  <searchResult> para fazer o <rendering> dos resultados no formato HTML.
+
+  <<Nota:>> Para além da possibilidade de utilizar a <tag> <searchResult> é 
+  ainda possível integrar outras frameworks de reporting, úteis para exportar os
+  resultados das pesquisas para diversos tipos de formatos. Por defeito, esta 
+  <framework> já permite a utilização da <framework> JFreeReport para a 
+  apresentação dos resultados. No entanto, a sua utilização está fora do âmbito 
+  deste exemplo.
+
+  Exemplo de utilização desta <tag>:
+
++---+
+<search:result search="${param.search}">    
+  <table cellspacing="1" cellpadding="4" class="table-result">
+
+    <search:resultHeader>
+      <tr>
+        <search:resultHeaderColumn>
+          <th align="center" rowspan="${rowspan}" colspan="${colspan}">
+            <b>${resultParam.resultLabel}</b>
+          </th>
+        </search:resultHeaderColumn>
+      </tr>
+    </search:resultHeader>
+    
+    <search:resultBody>
+      <tr>
+        <search:resultBodyColumn>
+          <td align="${align}">${value}</td>
+        </search:resultBodyColumn>
+      </tr>
+    </search:resultBody>
+
+  </table>
+</search:result>
++---+
+
+
+* <Tag pageableResult>
+  
+  Permite fazer o <rendering> dos resultados de forma paginável.
+
++---+
+<search:pageableResult search="${param.search}">
+  ${begin}-${end} de ${total}, Páginas:
+  <search:previousPage>
+    <a href="${url}">&lt;</a>
+  </search:previousPage>
+  
+  <select onchange="location.href=this[this.selectedIndex].value">
+    <search:pages>
+      <c:choose>
+        <c:when test="${selected}">
+          <option selected>${page}</option>
+        </c:when>
+        <c:otherwise>
+          <option value="${url}">${page}</option>
+        </c:otherwise>
+      </c:choose>
+    </search:pages>
+  </select>
+  
+  <search:nextPage>
+    <a href="${url}">&gt;</a>
+  </search:nextPage>
+</search:pageableResult>
++---+

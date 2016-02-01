@@ -1,0 +1,134 @@
+Introdução
+
+  Este componente permite utilizar a framework Share com a framework 
+  de pesquisa Search.
+
+
+  Antes de ser possível utilizar a <framework> é necessário configurá-la.
+  A sua configuração é feita através de ficheiros XML. Estes ficheiros,
+  também chamados de descriptors, são referidos mais à frente.
+
+  No início do processo de configuração, a <framework> lê o descriptor
+  <<<search-share-config.xml>>>
+
+  Depois da <framework> ser devidamente configurada, é possível gravar
+  pesquisas "customizádas" com filtros e result params pré-definidos.
+
+
+Principais Componentes
+
+  De seguida serão apresentados os principais componentes da <framework>:
+
+  * XML Descriptors
+
+  * Search Share Servlets
+
+  * Tag Library
+
+  []
+
+
+* XML Descriptors
+
+  Existe apenas um ficheiro de configuração para a Search Share:
+
+ [[1]] {{{#Search_Share_Config}Search Share Config}}
+        - descriptor que permite configurar a Search Share.
+
+  []
+
+
+
+** {Search Share Config}
+
+  Exemplo do ficheiro <<<search-share-config.xml>>>:
+
++---+
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE search-share-config PUBLIC
+"-//Maisis//DTD Search Share Configuration 1.5//EN"
+"http://www.maisis.pt/search/dtds/search-share-config_1_5.dtd">
+
+<search-share-config>
+
+    <message-resources>application</message-resources>
+    <data-source-name>java:comp/env/jdbc/${wcm.share.datasource}</data-source-name>
+    <show-sql>true</show-sql>
+    <auto-create-db>create-drop</auto-create-db>
+
+</search-share-config>
++---+
+
+  <<Nota:>> Para um detalhe exaustivo dos elementos constituíntes deste
+  descriptor XML ver {{{search-share-config.html}Search Share Config}}.
+
+
+* Search Share Servlets
+
+  Para utilizar esta framework em ambiente web é, ainda, necessário configurar
+  as servlets searchShare e searchPrepare no descriptor <web.xml>.
+  De seguida é apresentado um exemplo de como fazer essa configuração:
+
++---+
+  <!-- search servlet -->
+  <servlet>
+    <servlet-name>search</servlet-name>
+    <servlet-class>pt.maisis.search.web.SearchShareServlet</servlet-class>
+    <init-param>
+      <param-name>count</param-name>
+      <param-value>15</param-value>
+    </init-param>
+    <init-param>
+      <param-name>queryTimeout</param-name>
+      <param-value>60</param-value>
+    </init-param>
+    <init-param>
+      <param-name>selectAllResultParams</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>hideDuplicatedResultParams</param-name>
+      <param-value>false</param-value>
+    </init-param>
+    <init-param>
+      <param-name>exporterFilenamePrefix</param-name>
+      <param-value>report</param-value>
+    </init-param>
+    <init-param>
+      <param-name>exporterCompression</param-name>
+      <param-value>false</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <!-- prepare search servlet -->
+  <servlet>
+    <servlet-name>prepareSearch</servlet-name>
+    <servlet-class>pt.maisis.search.web.SearchSharePrepareServlet</servlet-class>
+    <init-param>
+      <param-name>count</param-name>
+      <param-value>15</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>search</servlet-name>
+    <url-pattern>/search</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>prepareSearch</servlet-name>
+    <url-pattern>/prepareSearch</url-pattern>
+  </servlet-mapping>
++---+
+
+
+* Tag Library
+
+  A <framework> também disponibiliza uma <custom tag library> para facilitar a
+  sua utilização em ambiente web.
+  As tags estão documentadas em {{{tagreference.html}Taglib}}.
+  
+  

@@ -1,0 +1,21 @@
+﻿<Search Framework Releases>
+
+  <<General Availability (GA) Releases:>>
+
+  * Distribuição mínima:\
+    Inclui unicamente a <framework> de pesquisa.
+
+    {{{assembly/search-core-${project.version}-bin.zip} search-core-${project.version}-bin.zip}}
+
+  
+  * Distribuição completa:\
+    Esta distribuição inclui todas as dependências da framework.
+
+    {{{assembly/search-core-${project.version}-dep.zip} search-core-${project.version}-dep.zip}}
+    
+  
+  * Documentação pdf:\
+    Esta distribuição inclui a documentação deste módulo em pdf.
+
+    {{{assembly/search-core-${project.version}-doc.zip} search-core-${project.version}-doc.zip}}
+    

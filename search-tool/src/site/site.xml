@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="search">
+  <bannerLeft>
+    <name>search example</name>
+    <src>../images/logo.gif</src>
+  </bannerLeft>
+
+  <body>
+    <links>
+      <item name="Search Framework" href="../index.html"/>
+    </links>
+
+    <menu name="Search Exemplo">
+      <item name="Introdução"  href="index.html"/>
+      <item name="Download" href="releases.html"/>
+    </menu>
+
+    <menu name="Componentes">
+      <item name="Search Core" href="../search-core/index.html"/>
+      <item name="Search JFreeReport" href="#"/>
+    </menu>
+
+    ${reports}
+
+  </body>
+</project>

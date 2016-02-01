@@ -1,0 +1,164 @@
+﻿Format
+
+  Os formatadores são utilizados pela <framework> para formatar os dados 
+  resultantes das pesquisas (<result params>).
+  
+  Normalmente, os dados são formatados tendo em conta um dado <locale> 
+  e <pattern>.
+  
+  Por exemplo, para transformar um valor do tipo data numa string, tendo em 
+  conta uma dada <pattern>, pode-se utilizar o <formatter> <<<customDate>>>:
+
++----------+
+<search-metadata>
+   ...
+  <result-params>
+    <result-param>
+      <name>data</name>
+       ...
+      <fields>
+        <field>DATA</field> 
+      </fields>
+      <formatter>
+        <name>customDate</name>
+        <pattern>yyyy-MM-dd</pattern>
+      </formatter>
+    </result-param>
+  </result-params>
+   ...
+</search-metadata>
++----------+
+
+  O elemento <<<formatter>>> é constituído pelos seguintes elementos:
+
+*---------------+-----------------------------------------------------------------+
+ <<Nome>>       | <<Descrição>>
+*---------------+-----------------------------------------------------------------+
+ name           | Nome do formatador. Este nome deve corresponder a um formatador disponível por {{{#Default_Formatters}defeito}} ou a um formatador específico da aplicação.
+                | Os formatadores específicos, criados para uma dada aplicação devem ser definido no ficheiro <<<search-config.xml>>>, como iremos ver mais à frente.
+*---------------+-----------------------------------------------------------------+
+ pattern        | Maior parte dos formatadores precisam de uma <<<pattern>>> para poderem formatar um dado objecto numa string.
+                | No exemplo anterior, o formatador <<<customDate>>> precisa que seja especificada a <<<pattern>>> a utilizar para formatar uma data numa string.
+                | Os formatadores que não precisam desta informação podem simplesmente ignorar este elemento.
+*---------------+-----------------------------------------------------------------+
+ null-value     | Este elemento permite definir uma string que poderá ser utilizada caso o valor do <result param> seja null.
+*---------------+-----------------------------------------------------------------+
+
+
+* {Default Formatters}
+
+  Por defeito, a <framework> de pesquisa disponibiliza os seguintes formatadores:
+
+*---------------+-----------------------------------------------------------------+
+ <<name>>       | <<class>>
+*---------------+-----------------------------------------------------------------+
+ number         | {{{apidocs/pt/maisis/search/format/NumberFormatter.html} NumberFormatter}}
+*---------------+-----------------------------------------------------------------+
+ time           | {{{apidocs/pt/maisis/search/format/TimeFormatter.html} TimeFormatter}}
+*---------------+-----------------------------------------------------------------+
+ date           | {{{apidocs/pt/maisis/search/format/DateFormatter.html} DateFormatter}}
+*---------------+-----------------------------------------------------------------+
+ dateTime       | {{{apidocs/pt/maisis/search/format/DateTimeFormatter.html} DateTimeFormatter}}
+*---------------+-----------------------------------------------------------------+
+ customDate     | {{{apidocs/pt/maisis/search/format/CustomDateFormatter.html} CustomDateFormatter}}
+*---------------+-----------------------------------------------------------------+
+ message        | {{{apidocs/pt/maisis/search/format/MessageFormatter.html} MessageFormatter}}
+*---------------+-----------------------------------------------------------------+
+ nullMessage    | {{{apidocs/pt/maisis/search/format/NullMessageFormatter.html} NullMessageFormatter}}
+*---------------+-----------------------------------------------------------------+
+ currency       | {{{apidocs/pt/maisis/search/format/CurrencyFormatter.html} CurrencyFormatter}}
+*---------------+-----------------------------------------------------------------+
+ percent        | {{{apidocs/pt/maisis/search/format/PercentFormatter.html} PercentFormatter}}
+*---------------+-----------------------------------------------------------------+
+
+  Todos estes formatadores estão disponíveis no pacote
+  {{{apidocs/pt/maisis/search/format/package-summary.html}format}}.
+  
+  Para além dos formatadores por defeito é, também, possível criar novos formatadores.
+  Para tal é necessário implementar, directa ou indirectamente, o interface 
+  {{{apidocs/pt/maisis/search/format/Formatter.html}Formatter}}.
+  
+  <<Nota:>> Para criar um novo formatador é mais fácil extender a classe 
+  {{{apidocs/pt/maisis/search/format/AbstractFormatter.html}AbstractFormatter}}.
+  
+  Depois de se criar a nova implementação é necessário dá-la a conhecer à 
+  <framework>, declarando a implementação no ficheiro <<<search-config.xml>>>.
+
+* Exemplo
+
+  De seguida é apresentada a implementação de um simples formatador que
+  se limita a transformar o valor numérico 1 na string "A", ou na string "B" 
+  caso o valor numérico seja diferente de 1. Se o valor for null ou não for 
+  uma instância de Number então deve retornar null.
+
++---+
+  package example;
+  
+  import java.util.Locale;
+  
+  public class ExampleFormatter extends AbstractFormatter {
+  
+      public ExampleFormatter() {
+      }
+  
+      public String format(Object obj, Locale locale) {
+          if (obj == null || !(obj instanceof Number)) {
+              return null;
+          }
+          return (obj.intValue() == 1) ? "A" : "B";
+      }
+  }
++---+
+
+  Ao contrário dos formatadores disponíveis por defeito, é necessário definir este
+  formatador no ficheiro <<<search-config.xml>>>. Esta definição consiste em mapear 
+  um nome a uma classe. Por exemplo:
+
++---+
+  <search-formatters>
+    <formatter>
+      <name>example</name>
+      <class>pt.ptin.gerex.search.format.ExampleFormatter</class>
+    </formatter>
+  </search-formatters>
++---+
+
+  A partir de agora, este formatador está pronto a ser utilizado por qualquer pesquisa
+  em que se deseje utilizar esta simples formatação. 
+  Exemplo:
+
++---+
+
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+        
+<!DOCTYPE search-metadata PUBLIC 
+"-//Maisis//DTD Search MetaData 1.5//EN" 
+"http://www.maisis.pt/search/dtds/search-metadata_1_5.dtd">
+        
+<search-metadata>
+  ...          
+
+  <!-- search params -->
+  <search-params>
+    ...  
+  </search-params>
+          
+  <!-- result params -->
+  <result-params>
+    <result-param>
+      <name>sigla</name>
+      <search-label>Sigla</search-label>
+      <fields>
+        <field>NUM</field> 
+      </field>
+      <align>right</align>
+      <formatter>
+        <name>example</name>
+      </formatter>
+    </result-param>
+  </result-params>
+</search-metadata>
+
++---+
+
+  

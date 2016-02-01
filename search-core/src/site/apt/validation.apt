@@ -1,0 +1,402 @@
+﻿Validation
+
+  A validação é utilizada para validar e converter os dados introduzidos pelo
+  utilizador numa uma dada pesquisa.
+
+  Por exemplo:
+
++---+
+...
+<search-param>
+  <name>data</name>
+  <field>DATA</field>
+  <operator>=</operator>
+  <container>
+    <label>label.data</label>
+    <type>text</type>
+
+    <!-- Date Validation (value required) -->
+    <validation>
+      <converter>date</converter>
+      <converter-properties>
+        <property>
+          <name>default-pattern</name>
+          <value>yyyy-MM-dd</value>
+        </property>
+      </converter-properties>
+      <required>true</required>
+    </validation>
+
+  </container>
+</search-param>
+...
++---+
+
+  Neste exemplo, é utilizado o converter {{{date}date}} que irá transformar a 
+  string introduzida pelo utilizador numa data, tendo em conta a dada
+  <<<pattern>>>.  Por outro lado, neste exemplo, o valor do campo é de 
+  preenchimento obrigatório, uma vez que se utilizou o elemento <<<required>>>
+  com o valor <<<true>>>.
+  
+
+  O elemento <<<validation>>> permite definir:
+
+*------------------------------------------------+-----------------------------------------------------------------+
+ <<Elemento>>                                    | <<Descrição>>
+*------------------------------------------------+-----------------------------------------------------------------+
+ {{{#converter}converter}}                       | Implementação do interface {{{apidocs/pt/maisis/search/validator/Converter.html}Converter}} que permite converter uma string num dado tipo de objecto.
+*------------------------------------------------+----------------------------------------------------------------+
+ {{{#converter-properties}converter-properties}} | Proprieades que permitem configurar um dado <<<Converter>>>.
+*------------------------------------------------+-----------------------------------------------------------------+
+ {{{#required}required}}                         | Indica se o <search param>/<container> é de preenchimento obrigatório.
+*------------------------------------------------+-----------------------------------------------------------------+
+ min-length                                      | Comprimento mínimo da String.
+                                                 | NOTA: esta implementação não está, ainda, devidamente concluída.
+*------------------------------------------------+-----------------------------------------------------------------+
+ max-length                                      | Comprimento máximo da String.
+                                                 | NOTA: esta implementação não está, ainda, devidamente concluída.
+*------------------------------------------------+-----------------------------------------------------------------+
+ min-value                                       | Valor mínimo da string depois de convertida para um number.
+                                                 | NOTA: esta implementação não está, ainda, devidamente concluída.
+*------------------------------------------------+-----------------------------------------------------------------+
+ max-value                                       | Valor máxima da string depois de convertida para um number.
+                                                 | NOTA: esta implementação não está, ainda, devidamente concluída.
+*------------------------------------------------+-----------------------------------------------------------------+
+ {{{#regex}regex}}                               | Expressão Regular que permitirá validar a string introduzida.
+*------------------------------------------------+-----------------------------------------------------------------+
+ {{{#expression}expression}}                     | Expressão (tipo Expression Language utilizada nas JSP) que permite especificar uma expressão que deve ser utilizada para verificar se um dado valor é ou não válido.
+*------------------------------------------------+-----------------------------------------------------------------+
+
+
+* {converter}
+
+  Os <converters> são utilizados na framework de pesquisa para converter os 
+  dados introduzidos pelo utilizador.
+
+  Por exemplo, numa pesquisa configurada com um dado <search param> em que o
+  valor permitido deve ser do tipo numérico, poderá utilizar-se o converter
+  <<<number>>> que converte a string introduzida numa instância de Number 
+  (Long ou Double).
+  
+  Por defeito, a <framework> disponibiliza o seguinte conjunto de converters:
+
+*---------------+-----------------------------------------------------------------+
+ <<Name>>       | <<Class>>
+*---------------+-----------------------------------------------------------------+
+ date           | {{{apidocs/pt/maisis/search/validator/DateConverter.html}DateConverter}}
+*---------------+----------------------------------------------------------------+
+ sqldate        | {{{apidocs/pt/maisis/search/validator/SqlDateConverter.html}SqlDateConverter}}
+*---------------+-----------------------------------------------------------------+
+ sqltime        | {{{apidocs/pt/maisis/search/validator/SqlTimeConverter.html}SqlTimeConverter}}
+*---------------+-----------------------------------------------------------------+
+ sqltimestamp   | {{{apidocs/pt/maisis/search/validator/SqlTimestampConverter.html}SqlTimestampConverter}}
+*---------------+-----------------------------------------------------------------+
+ sqllike        | {{{apidocs/pt/maisis/search/validator/SqlLikeConverter.html}SqlLikeConverter}}
+*---------------+-----------------------------------------------------------------+
+ split          | {{{apidocs/pt/maisis/search/validator/SplitConverter.html}SplitConverter}}
+*---------------+-----------------------------------------------------------------+
+ number         | {{{apidocs/pt/maisis/search/validator/NumberConverter.html}NumberConverter}}
+*---------------+-----------------------------------------------------------------+
+
+  <<Nota:>> Os nomes apresentados na tabela anterior, são os nomes que devem 
+  ser utilizados nos descriptors das pesquisas.
+
+  Todos estes <converters> estão disponíveis no pacote
+  {{{apidocs/pt/maisis/search/validator/package-summary.html}validator}}.
+  
+  Para além destes <converters> é possível criar novos <converters>.
+  Para tal é necessário implementar, directa ou indirectamente, o interface 
+  {{{apidocs/pt/maisis/search/validator/Converter.html}Converter}}.
+  
+  <<Nota:>> Para criar um novo <converter> é mais fácil extender a classe 
+  {{{apidocs/pt/maisis/search/validator/AbstractConverter.html}AbstractConverter}}.
+
+
+* {converter-properties}
+
+  Alguns <converters> precisam que lhes seja facultada alguma informação de 
+  forma a poderem efectuar a conversão correctamente. Por exemplo, o converter
+  {{{apidocs/pt/maisis/search/validator/DateConverter.html}DateConverter}} 
+  precisa de saber qual a <<<pattern>>> a utilizar para transformar uma dada 
+  string numa data. Todos os converters podem usufruir desta flexibilidade 
+  (incluindo novos converters). 
+
+  A classe abstracta 
+  {{{apidocs/pt/maisis/search/validator/AbstractConverter.html}AbstractConverter}}
+  já disponibiliza métodos que facilitam a gestão destas propriedades.
+
++---+
+  /**
+   * Método incovado automaticamente pelo configurador da
+   * framework para cada propriedade definida no descriptor
+   * da pesquisa.
+   */
+  public void addProperty(String name, String value);
+
+  /**
+   * Retorna um Map com as propriedades que foram especificadas
+   * no descriptor da pesquisa para este converter.
+   */
+  protected Map getProperties();
+  
+  /**
+   * Retorna o valor da propriedade identificada pelo dado name.
+   */
+  protected String getProperty(String name);
++---+
+
+  De seguida é apresentado um exemplo de como definir propriedades no descriptor
+  da pesquisa:
+
++---+
+...
+<search-param>
+  ...
+  <validation>
+    <converter>split</converter>
+    <converter-properties>
+      <property>
+        <name>separator</name>
+        <value>;</value>
+      </property>
+    </converter-properties>
+  </validation>
+</search-param>
+...
++---+
+
+
+* {required}
+ 
+  Por vezes existe a necessidade de tornar o preenchimento de um dado 
+  <search param>/<container> obrigatório.
+  Neste caso basta marcar no descriptor da pesquisa o elemento <<<required>>>
+  com o valor <<<true>>> (por defeito é false).
+
+  Exemplo:
+
++---+
+<required>true</required>
++---+
+
+
+* {regex}
+
+  Muitas vezes a forma mais simples de validar uma dada string é utilizando
+  uma expressão regular.
+  Neste caso basta especificar a expressão regular através do elemento
+  <regex>.
+
+  Exemplo:
+
++---+
+<regex>\d{2}[a-z]{1,2}</regex>
++---+
+
+* {expression}
+
+  Este elemento é bastante útil, principalmente em situações em que se
+  pretenda validar a dependência entre vários campos.
+
+  Por exemplo, se tivermos 2 containers diferentes, cada um deles 
+  representando uma data. Em que a data1 tem de ser inferior à data2
+  bastaria:
+
++---+
+<expression>
+  <CDATA[[
+    data2 == null || data1 < data2
+  ]]>
+</expression>
++---+
+
+
+* {Exemplo}:
+
+  De seguida, por questões exemplificativas, é apresentado um simples 
+  <<<converter>>> que se limita a transformar uma <<<String>>> num 
+  <<<Integer>>>.
+
++---+
+  package examples;
+  
+  public class IntegerExampleConverter extends AbstractConverter {
+  
+      public IntegerExampleConverter() {
+      }
+  
+      public boolean convert(ValidationResult result, 
+	  		     ValidationErrors errors,
+		  	     ContainerMetaData container,
+			     Locale locale) {
+  
+	  try {
+	    String value = (String) result.getValue(container.getName());
+	    result.setValue(container.getName(), Integer.parseInt(value));
+            return true;
+  
+  	  } catch(NumberFormatException e) {
+            String key = getKey(container, locale, "validation.error.number");
+	    ValidationError error = new ValidationError
+		(key, getLabel(container, locale));
+	    errors.add(error);
+	    return false;
+  	  }
+      }
+  }
++---+
+
+  Depois de se criar o <<<Converter>>> desejado, é necessário dá-lo a conhecer
+  à <framework> de pesquisa. 
+  Para tal é necessário declarar o <<<Converter>>> no ficheiro 
+  <<<search-config.xml>>>.
+  Por exemplo:
+
++---+
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE search-config PUBLIC 
+    "-//Maisis//DTD Search Configuration 1.5//EN" 
+    "http://www.maisis.pt/search/dtds/search-config_1_5.dtd">
+
+<search-config>
+  ...
+  <search-converters>
+    <converter>
+      <name>integer</name>
+      <class>pt.ptin.gerex.search.validator.IntegerExampleConverter</class>
+    </converter>
+  </search-converters>
+</search-config>
++---+
+
+
+  A partir deste momento este validator poderá ser utilizado nas pesquisas que 
+  se desejar.
+
+
+* Pontos importantes ao implementar um Converter
+
+  Existem alguns pontos importantes a criar um novo converter:
+
+
+** Converter
+
+  Quando se cria um novo <<<converter>>>, normalmente extende-se a classe 
+  {{{apidocs/pt/maisis/search/validator/AbstractConverter.html}AbstractConverter}}.
+
+
+** Método convert
+  
+  O método <<<convert>>> deve retornar true ou false 
+  em função da conversão ter sido feita, ou não, com sucesso.
+
+  Assinatura do método:
+
++---+
+  boolean convert(ValidationResult result, 
+                  ValidationErrors errors, 
+                  ContainerMetaData container, 
+                  Locale locale);
++---+
+
+
+** ValidationResult
+
+  Uma instância de <<<ValidationResult>>> é, inicialmente, <populated> com os 
+  valores introduzidos pelo utilizador, antes de ser feita qualquer validação. 
+
+  Por exemplo, quando o utilizador submete um dado formulário de pesquisa,
+  é criada uma instância de <<<ValidationResult>>>, na qual são inseridos
+  todos os valores dos parâmetros relevantes (definidos no descriptor da 
+  pesquisa) enviados no pedido HTTP.
+
+  À medida que as validações vão sendo feitas, estes valores poderão ser
+  convertidos utilizando <converters> como já foi referido mais em cima.
+  Assim, os valores deste container (<<<ValidationResult>>>) vão sendo 
+  actualizados à medida que vão sendo convertidos.
+
+  Na maioria das vezes, a conversão não é necessária. No entanto, existem
+  situações em que é preciso fazê-la. Por exemplo, no caso de um parâmetro 
+  de pesquisa do tipo data é necessário converter a string numa instância de 
+  Time, Date ou Timestamp dependendo do tipo de coluna na base de dados.
+  
+  Por outro lado, também poderão existir situações em que o valor convertido
+  é na mesma um string. No entanto, é feita uma conversão/transformação da
+  string de input numa outra string de output (a utilizar na pesquisa à
+  base de dados).
+
+  O importante a ter em conta é que um <converter> pode ser utilizado para
+  converter um parâmetro de pesquisa não só num objecto de outro tipo
+  (Integer, Date, etc.) mas também num formato diferente.
+
+
+** Mensagens de erro
+
+  Por norma, é boa prática colocar as mensagens de erro em resource bundles. 
+  Independentemente da aplicação ter ou não de suportar mais do que uma lingua.
+  Por defeito, o nome do ficheiro (resource bundle) é search.properties 
+  (ex: search_en.properties, etc).
+  No entanto, pode ser especificado um nome diferente no ficheiro 
+  <<<search-config.xml>>>, através do elemento <<<message-resources>>>.
+
+  Sempre que um erro ocorrer no processo de conversão, deve ser adicionada ao
+  container {{{apidocs/pt/maisis/search/validator/ValidationErrors.html}ValidationErrors}}
+  uma instância de {{{apidocs/pt/maisis/search/validator/ValidationError.html}ValidationError}}
+  que identificará o erro ocorrido.
+
+  No {{{#Exemplo}exemplo}} apresentado a chave representativa do erro ocorrido 
+  é primeiro traduzida, através do método <<<getKey>>> antes de ser colocada na 
+  instância de 
+  {{{apidocs/pt/maisis/search/validator/ValidationErrors.html}ValidationErrors}}.
+
++---+
+getKey(container, locale, "validation.error.number")
++---+
+
+  Esta tradução dá ao utilizador do <<<converter>>> uma maior flexibilidade no
+  que diz respeito às mensagens de erro que poderão ser reportadas (globalmente, 
+  por pesquisa ou por parâmetro de pesquisa).
+
+  Por exemplo, se a pesquisa em causa se chamar <<search>>, o search param 
+  tiver o nome <<param>>, e finalmente, o parâmetro <<<key>>> consistir na 
+  string <<validation.error.number>> então:
+
+  * Em primeiro lugar é criada uma nova chave com o nome da pesquisa e do 
+    search param adicionados como prefixo:
+    <<search.param.validation.error.number>>.
+    Antes de retornar esta nova chave, verifica se existe tradução no resource 
+    bundle para o dado locale. Se não existir executa o passo seguinte.
+
+  * O prefixo passa a ser só o nome do search param:
+    <<param.validation.error.number>>.
+    Mais uma vez, antes de devolver esta chave, verifica se existe tradução. 
+    Se não existir executa o passo seguinte.
+
+  * Finalmente, devolve o valor do parâmetro <<<key>>> inalterado. Neste caso o 
+    valor seria: <<validation.error.number>>.
+
+  []
+
+
+  O método <<<getKey>>> é disponibilizado pela classe 
+  {{{apidocs/pt/maisis/search/validator/AbstractConverter.html}AbstractConverter}}.
+  O que este método faz é basicamente invocar o método <<<getKey>>> na instância
+  da classe
+  {{{apidocs/pt/maisis/search/util/ApplicationResources.html}ApplicationResources}}.
+
+  O exemplo que se segue poderá ser útil, caso não se pretenda extender a classe
+  {{{apidocs/pt/maisis/search/validator/AbstractConverter.html}AbstractConverter}},
+  na criação de um novo <<<converter>>>.
+
++---+
+public String getKey(ContainerMetaData container, 
+    		 Locale locale,
+    		 String key) {
+
+    ApplicationResources messages = ApplicationResources.getInstance(locale);
+    String search = container.getSearchParameterMetaData().getSearchMetaData().getName();
+    String name = container.getName();
+    return messages.getKey(search, name, key);
+}
++---+

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+    
+    <display-name>Search Example</display-name>
+    
+    <!-- jstl resource bundle =============================================== -->
+    
+    <context-param>
+      <param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
+      <param-value>search-example</param-value>
+    </context-param>
+    
+    <!-- search  ============================================================ -->
+
+    <servlet>
+        <servlet-name>search</servlet-name>
+        <servlet-class>pt.maisis.search.web.SearchServlet</servlet-class>
+        <init-param>
+            <param-name>count</param-name>
+            <param-value>10</param-value>
+        </init-param>
+        <init-param>
+            <param-name>selectAllResultParams</param-name>
+            <param-value>false</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>    
+    </servlet>
+ 
+    <servlet>
+        <servlet-name>ajaxSearch</servlet-name>
+        <servlet-class>pt.maisis.search.web.AjaxSearchServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>    
+    </servlet>
+   
+    
+    <!-- prepare search ===================================================== -->
+
+    <servlet>
+        <servlet-name>prepareSearch</servlet-name>
+        <servlet-class>pt.maisis.search.web.PrepareSearchServlet</servlet-class>
+    </servlet>
+    
+    
+    <!-- image servlet ====================================================== -->
+
+    <servlet>
+        <servlet-name>ImageServlet</servlet-name>
+        <display-name>ImageServlet</display-name>
+        <servlet-class>pt.ptin.search.export.jfreereport.servlet.ImageServlet</servlet-class>
+    </servlet>
+    
+    
+    <servlet-mapping>
+        <servlet-name>ImageServlet</servlet-name>
+        <url-pattern>/image</url-pattern>
+        <description>
+            Esta servlet foi criada para ser utilizada na geracao de 
+            relatórios em formato HTML.
+        </description>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>search</servlet-name>
+        <url-pattern>/search</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ajaxSearch</servlet-name>
+        <url-pattern>/ajaxSearch</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>prepareSearch</servlet-name>
+        <url-pattern>/prepareSearch</url-pattern>
+    </servlet-mapping>
+    
+    <!-- welcome file -->
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+    
+    <!-- datasource -->
+    <resource-ref>
+        <res-ref-name>jdbc/SearchDS</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
+    </resource-ref>
+    
+</web-app>

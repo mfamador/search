@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!--
+     DTD Search MetaData 1.5
+
+     Para suportar a validação do teu ficheiro de configuração, inclui
+     o seguinte DOCTYPE no início do teu ficheiro XML (depois da declaração 
+     "xml"):
+
+     <!DOCTYPE search-metadata PUBLIC 
+               "-//Maisis//DTD Search MetaData 1.5//EN" 
+               "http://www.maisis.pt/search/dtds/search-metadata_1_5.dtd">
+-->
+
+<!ENTITY % script 
+  "#PCDATA">
+
+<!ENTITY % boolean
+  "#PCDATA">
+
+<!ELEMENT search-metadata
+  (name,
+   label,
+   description,
+   search-engine-class?,
+   data-source?,
+   search-result-exporter?,
+   (table-source|sql-template),
+   properties?,
+   search-params?,
+   result-params,
+   required-result-params*,
+   selected-result-params*,
+   selected-result-params-order*)>
+
+<!ELEMENT search-result-exporter
+  (class, 
+  template,
+  is-velocity-template)>
+
+<!ELEMENT search-params
+  ((search-param | dynamic-search-params)+,
+  search-sql-fragment?)>
+
+<!ELEMENT result-params
+  (result-param | composite-result-param | dynamic-result-params)+>
+
+<!ELEMENT required-result-params
+  (required-result-param | dynamic-required-result-params)+>
+
+<!ELEMENT selected-result-params
+  (selected-result-param | dynamic-selected-result-params)+>
+
+<!ELEMENT selected-result-params-order
+  (selected-result-param-order)+>
+
+<!ELEMENT selected-result-param-order
+  (name, order-type?)>
+
+<!ELEMENT search-param
+  (name,
+   field,
+   operator,
+   (composite-container|container),
+   properties?)>
+
+<!ELEMENT search-sql-fragment
+  (name,
+   value?)>
+
+<!ELEMENT properties
+  (property)+>
+
+<!ELEMENT property
+  (name, value)>
+
+<!ELEMENT dynamic-search-params
+  EMPTY>
+
+<!ELEMENT dynamic-result-params
+  EMPTY>
+
+<!ELEMENT dynamic-required-result-params
+  EMPTY>
+
+<!ELEMENT dynamic-selected-result-params
+  EMPTY>
+
+<!ATTLIST dynamic-search-params
+  class CDATA #REQUIRED>
+
+<!ATTLIST dynamic-result-params
+  class CDATA #REQUIRED>
+
+<!ATTLIST dynamic-required-result-params
+  class CDATA #REQUIRED>
+
+<!ATTLIST dynamic-selected-result-params
+  class CDATA #REQUIRED>
+
+<!ELEMENT composite-container
+  (label?,
+   label-orientation?,
+   validation?,
+   formatter?,
+   fragment-container+)>
+
+<!ELEMENT container
+  (label?,
+   label-orientation?,
+   type?,
+   checked?,
+   disabled?,
+   readonly?,
+   size?,
+   input-size?,
+   (default-value-constant | default-value-expression | default-value-list)?,
+   ajax?,
+   validation?,
+   event?)>
+
+<!ELEMENT fragment-container
+  (name,
+   label?,
+   label-orientation?,
+   type?,
+   checked?,
+   disabled?,
+   readonly?,
+   size?,
+   input-size?,
+   (default-value-constant | default-value-expression | default-value-list)?,
+   ajax?,
+   validation?,
+   event?)>
+
+<!ELEMENT event
+  (onclick?,
+   ondblclick?,
+   onmousedown?,
+   onmouseup?,
+   onmouseover?,
+   onmousemove?,
+   onmouseout?,
+   onfocus?,
+   onblur?,
+   onkeypress?,
+   onkeydown?,
+   onkeyup?,
+   onchange?)>
+
+<!ELEMENT default-value-list
+  (sql|constants)>
+
+<!ELEMENT ajax
+  (sql,
+   source,
+   parameters)>
+
+<!ELEMENT parameters
+  (parameter+)>
+
+<!ELEMENT constants
+  (constant+)>
+
+<!ELEMENT constant
+  (key,
+   value?,
+   selected?)>
+
+<!ELEMENT sql 
+  (data-source?,
+   statement,
+   column-mapping?,
+   selected-keys?)>
+
+<!ELEMENT column-mapping 
+  (key,
+   value)>
+
+<!ELEMENT selected-keys 
+  (key+)>
+
+<!ELEMENT result-param
+  (name,
+   selectable?,
+   search-label?,
+   result-label?,
+   fields,
+   align?,
+   width?,
+   height?,
+   header-style?,
+   value-style?,
+   formatter?,
+   exporter-formatter?,
+   properties?)>
+
+<!ELEMENT composite-result-param
+  (name,
+   selectable?,
+   search-label?,
+   result-label?,
+   align?,
+   width?,
+   height?,
+   header-style?,
+   result-param+,
+   composite-result-param*,
+   properties?)>
+
+<!ELEMENT required-result-param
+  (name,
+   fields,
+   properties?,
+   depends?,
+   unless?)>
+    
+<!ELEMENT formatter
+  (name?, pattern?, null-value?)>
+
+<!ELEMENT exporter-formatter
+  (name?, pattern?, null-value?)>
+
+<!ELEMENT validation
+  (converter?, 
+   converter-properties?,
+   required?, 
+   min-length?, 
+   max-length?, 
+   min-value?, 
+   max-value?, 
+   regex?, 
+   expression?)>
+
+<!ELEMENT converter-properties
+  (property+)>
+
+<!ELEMENT fields
+  (field+)>
+
+<!ELEMENT selected                 (%boolean;)>
+<!ELEMENT required                 (%boolean;)>
+<!ELEMENT converter                (#PCDATA)>
+<!ELEMENT min-length               (#PCDATA)>
+<!ELEMENT max-length               (#PCDATA)>
+<!ELEMENT min-value                (#PCDATA)>
+<!ELEMENT max-value                (#PCDATA)>
+<!ELEMENT regex                    (#PCDATA)>
+<!ELEMENT expression               (#PCDATA)>
+<!ELEMENT name                     (#PCDATA)>
+<!ELEMENT value                    (#PCDATA)>
+<!ELEMENT description              (#PCDATA)>
+<!ELEMENT search-engine-class      (#PCDATA)>
+<!ELEMENT data-source              (#PCDATA)>
+<!ELEMENT table-source             (#PCDATA)>
+<!ELEMENT sql-template             (#PCDATA)>
+<!ELEMENT field                    (#PCDATA)>
+<!ELEMENT operator                 (#PCDATA)>
+<!ELEMENT class                    (#PCDATA)>
+<!ELEMENT template                 (#PCDATA)>
+<!ELEMENT pattern                  (#PCDATA)>
+<!ELEMENT join-pattern             (#PCDATA)>
+<!ELEMENT join-token               (#PCDATA)>
+<!ELEMENT input-size               (#PCDATA)>
+<!ELEMENT label                    (#PCDATA)>
+<!ELEMENT label-orientation        (#PCDATA)>
+<!ELEMENT default-value-constant   (#PCDATA)>
+<!ELEMENT default-value-expression (#PCDATA)>
+<!ELEMENT search-label             (#PCDATA)>
+<!ELEMENT result-label             (#PCDATA)>
+<!ELEMENT displayable              (#PCDATA)>
+<!ELEMENT align                    (#PCDATA)>
+<!ELEMENT size                     (#PCDATA)>
+<!ELEMENT width                    (#PCDATA)>
+<!ELEMENT height                   (#PCDATA)>
+<!ELEMENT depends                  (#PCDATA)>
+<!ELEMENT unless                   (#PCDATA)>
+<!ELEMENT selected-result-param    (#PCDATA)>
+<!ELEMENT order-type               (#PCDATA)>
+<!ELEMENT type                     (#PCDATA)>
+<!ELEMENT checked                  (#PCDATA)>
+<!ELEMENT disabled                 (#PCDATA)>
+<!ELEMENT readonly                 (#PCDATA)>
+<!ELEMENT is-velocity-template     (#PCDATA)>
+<!ELEMENT selectable               (#PCDATA)>
+<!ELEMENT statement                (#PCDATA)>
+<!ELEMENT key                      (#PCDATA)>
+<!ELEMENT source                   (#PCDATA)>
+<!ELEMENT parameter                (#PCDATA)>
+<!ELEMENT header-style             (#PCDATA)>
+<!ELEMENT value-style              (#PCDATA)>
+<!ELEMENT null-value               (#PCDATA)>
+
+<!ELEMENT onclick                  (%script;)>
+<!ELEMENT ondblclick               (%script;)>
+<!ELEMENT onmousedown              (%script;)>
+<!ELEMENT onmouseup                (%script;)>
+<!ELEMENT onmouseover              (%script;)>
+<!ELEMENT onmousemove              (%script;)>
+<!ELEMENT onmouseout               (%script;)>
+<!ELEMENT onfocus                  (%script;)>
+<!ELEMENT onblur                   (%script;)>
+<!ELEMENT onkeypress               (%script;)>
+<!ELEMENT onkeydown                (%script;)>
+<!ELEMENT onkeyup                  (%script;)>
+<!ELEMENT onchange                 (%script;)>

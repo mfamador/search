@@ -1,0 +1,16 @@
+<!-- mvn doxia:render-books -->
+<book>
+  <id>search-jfreereport-2.1.3</id>
+  <title>Search Framework</title>
+  <chapters>
+    <chapter>
+      <id>bind</id>
+      <title>Search JFreeReport 2.1.3</title>
+      <sections>
+        <section>
+          <id>index</id>
+        </section>
+      </sections>
+    </chapter>
+  </chapters>
+</book>

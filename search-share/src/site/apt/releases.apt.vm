@@ -1,0 +1,33 @@
+﻿<Search Framework Releases>
+
+  <<General Availability (GA) Releases:>>
+
+  * Distribuição mínima:\
+    Inclui unicamente a componente que permite integrar o <framework> Search Share na <framework> de pesquisa.
+
+    {{{assembly/search-share-${project.version}-bin.zip} search-share-${project.version}-bin.zip}}
+
+
+  * Distribuição mínima sem hibernate:\
+    Inclui unicamente a componente que permite integrar o <framework> Search Share na <framework> de pesquisa.
+
+    {{{../search-share-nohibernate/assembly/search-share-nohibernate-${project.version}-bin.zip} search-share-nohibernate-${project.version}-bin.zip}}
+
+  
+  * Distribuição completa:\
+    Esta distribuição inclui todas as dependências.
+
+    {{{assembly/search-share-${project.version}-dep.zip} search-share-${project.version}-dep.zip}}
+
+  
+  * Distribuição completa sem hibernate:\
+    Esta distribuição inclui todas as dependências (distribuição sem hibernate).
+
+    {{{../search-share-nohibernate/assembly/search-share-nohibernate-${project.version}-dep.zip} search-share-nohibernate-${project.version}-dep.zip}}
+    
+
+  * Documentação pdf:\
+    Esta distribuição inclui a documentação deste módulo em pdf.
+
+    {{{assembly/search-share-${project.version}-doc.zip} search-share-${project.version}-doc.zip}}
+

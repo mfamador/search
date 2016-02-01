@@ -1,0 +1,266 @@
+Configuração
+
+    Para utilizar o módulo Search Share, deverão ser colocadas as bilbiotecas
+    necessárias no classpath do projecto.
+    As bibliotecas poderão ser descarregadas em {{{releases.html}Download}}.
+
+* Configurar servlets
+
+    Para utilizar o módulo de gravação e partilha de relatórios, os pedidos
+    deverão passar a ser efectuados às novas servlets. Para isso estas deverão
+    ser configuradas nos ficheiros WEB-INF/web.xml de cada projecto.
+    NOTA: as novas servlets poderão perfeitamente coexistir com as antigas,
+    sendo sendo que terão um mapeamento distincto, cabendo aos projectos
+    determinarem quando devem utilizar as antigas ou as novas.
+
++----------+
+ ...
+ <servlet>
+    <servlet-name>search</servlet-name>
+    <servlet-class>pt.maisis.search.web.SearchShareServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+</servlet>
+...
+<servlet>
+    <servlet-name>search</servlet-name>
+    <servlet-class>pt.maisis.search.web.SearchSharePrepareServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+</servlet>
+...
++----------+
+
+* Criar ficheiro de configuração search-share-config.xml, onde se deverá colocar,
+  entre outros, a datasource onde se pretende persistir as pesquisas:
+
+    Exemplo:
+
++----------+
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE search-share-config PUBLIC
+"-//Maisis//DTD Search Share Configuration 1.5//EN"
+"http://www.maisis.pt/search/dtds/search-share-config_1_5.dtd">
+
+<search-share-config>
+    <message-resources>application</message-resources>
+    <data-source-name>java:comp/env/jdbc/projectDataSource</data-source-name>
+    <!--<show-sql>true</show-sql>
+    <auto-create-db>create-drop</auto-create-db>-->
+</search-share-config>
++----------+
+
+* Criar ficheiro de configuração search-share-config.xml, onde se deverá colocar,
+  entre outros, a datasource onde se pretende persistir as pesquisas
+
++----------+
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE search-share-config PUBLIC
+"-//Maisis//DTD Search Share Configuration 1.5//EN"
+"http://www.maisis.pt/search/dtds/search-share-config_1_5.dtd">
+
+<search-share-config>
+    <message-resources>application</message-resources>
+    <data-source-name>java:comp/env/jdbc/projectDataSource</data-source-name>
+    <!--<show-sql>true</show-sql>
+    <auto-create-db>create-drop</auto-create-db>-->
+</search-share-config>
++----------+
+
+* Alterar o template JSP da search
+  Exemplo search.jsp:
+
+** Colocar a taglib da search share
+
++----------+
+<%-- search --%>
+<%@ taglib uri="http://search.maisis.pt/taglib/search" prefix="search" %>
+<%@ taglib uri="http://search.maisis.pt/taglib/search-share" prefix="search-share" %>
++----------+
+
+** Colocar dentro do formulário os inputs para pedir ao utlilizador o nome da
+   pesquisa a gravar, etc
+
++----------+
+<form
+....
+  <table>
+    <%-- SEARCH SHARE --%>
+    <tr>
+        <td colspan="10">
+            <span class="srclabel">Nome da pesquisa</span><br/>
+            <input type="hidden" style="width: 25px;" name="inputReportId" value="${searchShareReportId}"/>
+            <input type="text" name="inputReportName" value="${searchShareReportName}"/>
+            <input type="hidden" name="inputCreatorId" value="${user.id}"/>
+            <input type="hidden" name="inputEntityId" value="${user.id}"/>
+
+            <c:choose>
+                <c:when test="${empty searchShareReportId}">
+                    <fmt:message var="src" key="button.saveSearch"/>
+                </c:when>
+                <c:otherwise>
+                    <fmt:message var="src" key="button.updateSearch"/>
+                </c:otherwise>
+            </c:choose>
+            <input style="width: 75px; border:1px solid #999999;" name="searchShareSubmit"
+            type="submit" onclick="fillFakeParams(); selectAllResultParams();" value="${src}"/>
+        </td>
+    </tr>
+    <%-- END SEARCH SHARE --%>
+</table>
++----------+
+
+* Listar os relatótios gravados
+  Colocar onde se pretender a Custom Tag para disponibilizar as pesquisas gravadas
+  Exemplo colocado no template da própria search. Mostra apenas relatórios
+  gravados para a pesquisa actual:
+
++----------+
+<search-share:searches search="${param.search}" start="${param.s}" count="${param.c}" entity="${user.id}">
+    <c:if test="${!empty reports}">
+        <c:if test="${!empty previousStart}">
+            <a href="${home}/search?search=${param.search}&reset=false&s=${previousStart}">prev</a>&nbsp;&nbsp;
+        </c:if>
+        Saved searches (${total}):
+        <c:if test="${!empty nextStart}">
+            &nbsp;&nbsp;<a href="${home}/search?search=${param.search}&reset=false&s=${nextStart}">next</a>
+        </c:if>
+
+        <table cellspacing="2" cellpadding="2">
+            <tr>
+                <th style="padding-right: 10px;" nowrap>id</th>
+                <th style="padding-right: 10px;" nowrap>creator</th>
+                <th style="padding-right: 10px;" nowrap>search</th>
+                <th style="padding-right: 10px;" nowrap>report name</th>
+                <th style="padding-right: 10px;" nowrap>created</th>
+                <th style="padding-right: 10px;" nowrap>changed</th>
+                <th style="padding-right: 10px;" nowrap>state</th>
+                <th style="padding-right: 10px;" nowrap></th>
+            </tr>
+
+            <c:forEach var="report" items="${reports}" varStatus="a">
+                <tr>
+                    <td style="padding-right: 10px;" nowrap>${report.id}</td>
+                    <td style="padding-right: 10px;" nowrap>${report.creatorId}</td>
+                    <td style="padding-right: 10px;" nowrap>${report.searchName}</td>
+                    <td style="padding-right: 10px;" nowrap>${report.reportName}</td>
+                    <td style="padding-right: 10px;" nowrap><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${report.creationDate}"/></td>
+                    <td style="padding-right: 10px;" nowrap><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${report.changeDate}"/></td>
+                    <td style="padding-right: 10px;" nowrap>${report.state}</td>
+                    <td style="padding-right: 10px;" nowrap>
+                        <script type="text/javascript">
+                            function searchUrl(conf, operation, searchName, reportId) {
+                                var answer =true;
+
+                                if(conf) {
+                                    answer = confirm("Remove saved report ?");
+                                }
+                                if(answer) {
+                                    location = '${home}/search?search=' + searchName + '&operation=' + operation + '&reportId=' + reportId + '&s=${start}&url=' + encodeURIComponent('search?search=${param.search}&reset=false&s=${param.s}');
+                                }
+                                return false;
+                            }
+                            function prepareSearchUrl(conf, operation, searchName, reportId) {
+                                location = '${home}/prepareSearch?search=' + searchName + '&populate=true&operation=' + operation + '&reportId=' + reportId + '&s=${start}';
+                                return false;
+                            }
+                        </script>
+
+                        <a href="#" onclick="prepareSearchUrl(false, 'prepare', '${report.searchName}', ${report.id})">edit</a>&nbsp;&nbsp;
+                        <a href="#" onclick="searchUrl(false, 'execute', '${report.searchName}', ${report.id})">execute</a>&nbsp;&nbsp;
+                        <a href="#" onclick="searchUrl(true,  'remove',  '${report.searchName}', ${report.id})">remove</a>&nbsp;&nbsp;
+                        <a href="#" onclick="hideShow('reportDetails${report.id}')">details</a>
+                    </td>
+                </tr>
+                <tr><td colspan="8">
+                         <div id="reportDetails${report.id}" style="display: none;">
+                            <table>
+                                <c:if test="${!empty report.searchParams}">
+                                    <tr>
+                                        <td style="text-align:left; background-color: #dedede;" colspan="7">
+                                            <table id="tableDetails">
+                                                <tr><th nowrap colspan="2">Search Params</th></tr>
+                                                <tr>
+                                                    <th>name</th>
+                                                    <th>value</th>
+                                                </tr>
+                                                <c:forEach var="searchParam" items="${report.searchParams}" varStatus="b">
+                                                    <tr>
+                                                        <td>${searchParam.name}</td>
+                                                        <td>${searchParam.value}</td>
+                                                    </tr>
+                                                </c:forEach>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </c:if>
+                                 <c:if test="${!empty report.resultParams}">
+                                    <tr>
+                                        <td style="text-align:left; background-color: #ededed;" colspan="7">
+                                            <table id="tableDetails">
+                                                <tr><th nowrap colspan="2">Result Params</th></tr>
+                                                <tr>
+                                                    <th>name</th>
+                                                    <th>order</th>
+                                                </tr>
+                                                <c:forEach var="resultParam" items="${report.resultParams}" varStatus="b">
+                                                    <tr>
+                                                        <td>${resultParam.name}</td>
+                                                        <td>${resultParam.displayOrder}</td>
+                                                    </tr>
+                                                </c:forEach>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </c:if>
+
+                                <c:if test="${!empty report.orderParams}">
+                                    <tr>
+                                        <td style="text-align:left; background-color: #dedede;" colspan="7">
+                                            <table id="tableDetails">
+                                                <tr><th nowrap colspan="3">Order Params</th></tr>
+                                                <tr>
+                                                    <th>name</th>
+                                                    <th>order</th>
+                                                    <th>order type</th>
+                                                </tr>
+                                                <c:forEach var="orderParam" items="${report.orderParams}" varStatus="b">
+                                                    <tr>
+                                                        <td>${orderParam.name}</td>
+                                                        <td>${orderParam.displayOrder}</td>
+                                                        <td>${orderParam.orderType}</td>
+                                                    </tr>
+                                                </c:forEach>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </c:if>
+                                <c:if test="${!empty report.reportEntities}">
+                                    <tr>
+                                        <td style="text-align:left; background-color: #dedede;" colspan="7">
+                                            <table id="tableDetails">
+                                                <tr><th nowrap colspan="3">Entities</th></tr>
+                                                <tr>
+                                                    <th>id</th>
+                                                    <th>type</th>
+                                                    <th>permission</th>
+                                                </tr>
+                                                <c:forEach var="entity" items="${report.reportEntities}" varStatus="b">
+                                                    <tr>
+                                                        <td>${entity.entityId}</td>
+                                                        <td>${entity.entityTypeId}</td>
+                                                        <td>${entity.permissionId}</td>
+                                                    </tr>
+                                                </c:forEach>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </c:if>
+                            </table> </div>
+                    </td>
+                </tr>
+            </c:forEach>
+        </table>
+    </c:if>
+</search-share:searches>
++----------+

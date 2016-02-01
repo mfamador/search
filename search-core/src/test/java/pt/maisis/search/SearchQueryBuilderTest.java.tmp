@@ -1,0 +1,59 @@
+package pt.maisis.search;
+
+import junit.framework.TestCase;
+
+/**
+ * Testes para a classe {@link SearchQueryBuilder}.
+ *
+ * @version 1.0
+ */
+public class SearchQueryBuilderTest extends TestCase {
+    
+//     public void testInvalidSearchName() {
+//         try {
+//             new SearchQueryBuilder("invalidReportName");
+//             fail("exception not thrown");
+//         } catch (IllegalArgumentException e) {}
+//     }
+        
+//     public void testInvalidState() {
+//         try {
+//             new SearchQueryBuilder("searchTest").getSearchQuery();
+//             fail("exception not thrown");
+//         } catch (IllegalStateException e) {}
+//     }
+
+//     public void testInvalidSearchParam() {
+//         SearchQueryBuilder builder = new SearchQueryBuilder("searchTest");
+//         try {
+//             builder.buildSearchParam("", null);
+//             fail("exception not thrown");
+//         } catch (IllegalArgumentException e) {}
+//     }
+
+//     public void testInvalidResultParam() {
+//         SearchQueryBuilder builder = new SearchQueryBuilder("searchTest");
+//         try {
+//             builder.buildResultParam("");
+//             fail("exception not thrown");
+//         } catch (IllegalArgumentException e) {}
+//     }
+
+//     public void testInvalidOrderParam() {
+//         SearchQueryBuilder builder = new SearchQueryBuilder("searchTest");
+//         try {
+//             builder.buildOrderParam("", OrderParameter.ASCENDING);
+//             fail("exception not thrown");
+//         } catch (IllegalArgumentException e) {}
+//     }
+
+//     public void testValid() {
+//         SearchQueryBuilder builder = new SearchQueryBuilder("searchTest");
+//         builder.buildResultParam("id");
+//         builder.buildSearchParam("id", "1");
+//         SearchQueryMetaData query = builder.getSearchQuery();
+//         SearchEngine se = SearchEngine.getInstance();
+//         se.executeSearch(query, 1, 10, 10);
+//     }
+}
+

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!--
+     DTD Search Share Configuration v1.5
+
+     Para suportar a validação do ficheiro de configuração, é
+     necessário incluir o seguinte DOCTYPE no início do
+     ficheiro XML (depois da declaração "xml"):
+
+     <!DOCTYPE search-share-config PUBLIC
+          "-//Maisis//DTD Search Share Configuration 1.5//EN"
+          "http://www.maisis.pt/search/dtds/search-share-config_1_5.dtd">
+-->
+
+<!--
+  O elemento "search-share-config" contém os valores de configuração por defeito
+  das pesquisas.
+
+  data-source-name              Nome (JNDI) da datasource a utilizar caso
+                                o elemento datasource não seja especificado
+                                no ficheiro de configuração da pesquisa.
+-->
+
+<!ELEMENT search-share-config
+ (message-resources?,
+  (data-source-name|jta-data-source-name),
+  auto-create-db?,
+  show-sql?,
+  input-report-id?,
+  input-report-name?,
+  input-report-type?,
+  input-entity-id?,
+  input-entity-type-id?,
+  input-creator-id?,
+  input-permission-id?,
+  input-sliding-window?,
+  submit-name?,
+  operation?,
+  report-id?,
+  url?)>
+
+<!ELEMENT message-resources
+  (#PCDATA)>
+
+<!ELEMENT data-source-name
+  (#PCDATA)>
+
+<!ELEMENT auto-create-db
+  (#PCDATA)>
+  
+<!ELEMENT jta-data-source-name
+  (#PCDATA)>
+
+<!ELEMENT show-sql
+  (#PCDATA)>
+
+<!ELEMENT input-report-id
+  (#PCDATA)>
+
+<!ELEMENT input-report-name
+  (#PCDATA)>
+
+<!ELEMENT input-report-type
+  (#PCDATA)>
+
+<!ELEMENT input-entity-id
+  (#PCDATA)>
+
+<!ELEMENT input-entity-type-id
+  (#PCDATA)>
+
+<!ELEMENT input-creator-id
+  (#PCDATA)>
+
+<!ELEMENT input-permission-id
+  (#PCDATA)>
+
+<!ELEMENT input-sliding-window
+  (#PCDATA)>
+
+<!ELEMENT submit-name
+  (#PCDATA)>
+
+<!ELEMENT operation
+  (#PCDATA)>
+
+<!ELEMENT report-id
+  (#PCDATA)>
+
+<!ELEMENT url
+  (#PCDATA)>
+
+

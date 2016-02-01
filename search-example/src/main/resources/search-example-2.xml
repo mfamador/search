@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE search-metadata PUBLIC 
+"-//Maisis//DTD Search MetaData 1.5//EN" 
+"http://www.maisis.pt/search/dtds/search-metadata_1_5.dtd">
+
+<search-metadata>
+  <name>search2</name>
+  <label>Exemplo 2</label>
+  <description>...</description>
+  <search-engine-class>pt.maisis.search.dao.db.VelocitySearchEngineDao</search-engine-class>
+  <sql-template>
+    <![CDATA[
+      select
+        #if ($queryType == 'count')
+          count(*)
+        #else
+          $sql.getCsv($resultParams)
+        #end
+      from 
+        UTILIZADOR a,
+        TIPO_UTILIZADOR b
+      where
+        a.ID_TIPO_UTILIZADOR = b.ID
+        #if ($searchParams)
+          and $sql.getCriterias($searchParams)
+        #end
+      #if ($orderParams)
+        order by $sql.getCsv($orderParams)  
+      #end
+    ]]>
+  </sql-template>
+          
+  <search-params>
+    <search-param>
+      <name>name</name>
+      <field>upper(a.NOME)</field>
+      <operator>LIKE</operator>
+      <container>
+        <label>label.name</label>
+        <type>text</type>
+        <size>290</size>
+        <input-size>50</input-size>
+	<validation>
+	  <converter>sqllike</converter>
+	</validation>
+      </container>
+    </search-param>
+
+    <search-param>
+      <name>startDate</name>
+      <field>DATA</field>
+      <operator>&gt;=</operator>
+
+      <composite-container>
+        <label>label.startDate</label>
+	<validation>
+	  <converter>sqldate</converter>
+	  <expression><![CDATA[
+	  endDate == null || startDate < endDate
+	  ]]></expression>
+	</validation>
+
+        <fragment-container>
+          <name>startDay</name>
+          <label>label.day</label>
+          <type>text</type>
+          <size>30</size>
+          <input-size>2</input-size>
+          <validation>
+	    <converter>date</converter>
+	    <converter-properties>
+	      <property>
+		<name>pt</name>
+		<value>dd</value>
+	      </property>
+	    </converter-properties>
+	  </validation>
+        </fragment-container>
+
+        <fragment-container>
+          <name>startMonth</name>
+          <label>label.month</label>
+          <type>text</type>
+          <size>30</size>
+          <input-size>2</input-size>
+	  <validation>
+	    <converter>date</converter>
+	    <converter-properties>
+	      <property>
+		<name>pt</name>
+		<value>MM</value>
+	      </property>
+	    </converter-properties>
+	  </validation>
+        </fragment-container>
+
+        <fragment-container>
+          <name>startYear</name>
+          <label>label.year</label>
+          <type>text</type>
+          <size>50</size>
+          <input-size>4</input-size>
+	  <validation>
+	    <converter>date</converter>
+	    <converter-properties>
+	      <property>
+		<name>pt</name>
+		<value>yyyy</value>
+	      </property>
+	    </converter-properties>
+	  </validation>
+        </fragment-container>
+      </composite-container>
+    </search-param>
+
+    <search-param>
+      <name>endDate</name>
+      <field>DATA</field>
+      <operator>&lt;=</operator>
+
+      <composite-container>
+        <label>label.endDate</label>
+	<validation>
+	  <converter>sqldate</converter>
+	  <expression><![CDATA[
+	  date == date
+	  ]]></expression>
+	</validation>
+
+        <fragment-container>
+          <name>endDay</name>
+          <label>label.day</label>
+          <type>text</type>
+          <size>30</size>
+          <input-size>2</input-size>
+          <validation>
+	    <converter>date</converter>
+	    <converter-properties>
+	      <property>
+		<name>pt</name>
+		<value>dd</value>
+	      </property>
+	    </converter-properties>
+	  </validation>
+        </fragment-container>
+
+        <fragment-container>
+          <name>endMonth</name>
+          <label>label.month</label>
+          <type>text</type>
+          <size>30</size>
+          <input-size>2</input-size>
+	  <validation>
+	    <converter>date</converter>
+	    <converter-properties>
+	      <property>
+		<name>pt</name>
+		<value>MM</value>
+	      </property>
+	    </converter-properties>
+	  </validation>
+        </fragment-container>
+
+        <fragment-container>
+          <name>endYear</name>
+          <label>label.year</label>
+          <type>text</type>
+          <size>50</size>
+          <input-size>4</input-size>
+	  <validation>
+	    <converter>date</converter>
+	    <converter-properties>
+	      <property>
+		<name>pt</name>
+		<value>yyyy</value>
+	      </property>
+	    </converter-properties>
+	  </validation>
+        </fragment-container>
+      </composite-container>
+    </search-param>
+  </search-params>
+
+  <result-params>
+    <result-param>
+      <name>name</name>
+      <search-label>label.name</search-label>
+      <fields>
+        <field>a.NOME</field> 
+      </fields>
+      <align>left</align>
+      <width>241</width>
+      <height>15</height>
+      <header-style>result-header</header-style>
+      <value-style>result-value</value-style>
+    </result-param>
+
+    <result-param>
+      <name>employe</name>
+      <search-label>label.employe</search-label>
+      <fields>
+        <field>NUM_EMPREGADO</field> 
+      </fields>
+      <align>center</align>
+      <width>50</width>
+      <height>15</height>
+      <header-style>result-header</header-style>
+      <value-style>result-value</value-style>
+    </result-param>
+    
+    <result-param>
+      <name>type</name>
+      <search-label>label.type</search-label>
+      <fields>
+        <field>b.NOME</field> 
+      </fields>
+      <align>center</align>
+      <width>60</width>
+      <height>15</height>
+      <header-style>result-header</header-style>
+      <value-style>result-value-2</value-style>
+    </result-param>
+                         
+    <result-param>
+      <name>date</name>
+      <search-label>label.date</search-label>
+      <fields>
+        <field>DATA</field> 
+      </fields>
+      <align>center</align>
+      <width>80</width>
+      <height>15</height>
+      <formatter>
+        <name>date</name>
+      </formatter>
+    </result-param>
+
+    <result-param>
+      <name>phone</name>
+      <search-label>label.phone</search-label>
+      <fields>
+        <field>TELEFONE</field> 
+      </fields>
+      <align>center</align>
+      <width>55</width>
+      <height>15</height>
+    </result-param>
+  </result-params>
+          
+  <required-result-params>
+    <required-result-param>
+      <name>id</name>
+      <fields>
+        <field>a.ID</field>
+      </fields>
+    </required-result-param>
+  </required-result-params>
+
+</search-metadata>

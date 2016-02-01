@@ -1,0 +1,127 @@
+﻿Web Search Config
+
+  Este <descriptor> é constituído pelos seguintes elementos:
+
+*-----------------------------+---------------------------------------------------+
+ <<Elemento>>                 | <<Descrição>>
+*-----------------------------+---------------------------------------------------+
+ web-search-config            | Elemento pai do documento XML.
+*-----------------------------+---------------------------------------------------+
+ {{{#exporter}exporter}}      | Este elemento permite definir um dado <exporter> que poderá ser utilizado para exportar os resultados das pesquisas.
+*-----------------------------+---------------------------------------------------+
+ {{{#search}search}}          | Elemento que representa uma pesquisa web. 
+*-----------------------------+---------------------------------------------------+
+
+* {exporter}
+ 
+  Este elemento permite definir uma implementação expecífica do interface {{{apidocs/pt/maisis/search/export/SearchResultExporter.html}SearchResultExporter}}.
+
+*-----------------------------+---------------------------------------------------+
+ <<Atributo>>                 | <<Descrição>>
+*-----------------------------+---------------------------------------------------+
+  name                        | Nome pelo qual o exportador poderá ser referenciado.
+*-----------------------------+---------------------------------------------------+
+  class                       | Implementação de {{{apidocs/pt/maisis/search/export/SearchResultExporter.html}SearchResultExporter}}.
+*-----------------------------+---------------------------------------------------+
+  template                    | Nome do ficheiro que corresponde à template a ser utilizada pelo <exporter>.
+*-----------------------------+---------------------------------------------------+
+  velocity                    | Identifica se a template referida no atributo <<<template>>> deve ser previamente manipulada utilizando a framework velocity. Útil em situações em que se pretende uma template dinâmica.
+*-----------------------------+---------------------------------------------------+
+  html-header                 | Quando o formato especificado for do tipo <<<htmlfragment>>> é, normalmente, útil especificar o <header> desse fragmento bem como o <footer> (<<<html-footer>>>).
+*-----------------------------+---------------------------------------------------+
+  html-footer                 | Semelhante ao atributo <<<html-header>>>.
+*-----------------------------+---------------------------------------------------+
+
+* {search}
+ 
+*-----------------------------+---------------------------------------------------+
+ <<Atributo>>                 | <<Descrição>>
+*-----------------------------+---------------------------------------------------+
+  name                        | Nome da pesquisa. Este nome deve corresponder a uma pesquisa pré-configurada.
+*-----------------------------+---------------------------------------------------+
+  search-view                 | <View> (jsp, servlet, html...) que contém o formulário de pesquisa.
+*-----------------------------+---------------------------------------------------+
+  search-form                 | Nome do atributo em que a <form> será guardada e posteriormente identificada.
+                              | Neste contexto, uma <form> é pouco mais do que um <javabean> que é <populated> com os critérios de pesquisa e campos de retorno submetidos num pedido HTTP. 
+                              | Mais informação a este respeito é disponibilizada no {{{/apidocs/index.html}javadoc}}.
+*-----------------------------+---------------------------------------------------+
+  search-form-scope           | <Scope> em que a <form> será colocada (<request> ou <session>).
+*-----------------------------+---------------------------------------------------+  
+  search-form-class           | Pode existir a necessidade de extender o funcionamento da <form>.
+                              | Nestes casos poderá ser criada uma classe específica que irá substituir a classe actual.
+*-----------------------------+---------------------------------------------------+
+  search-result               | Nome do atributo que será utilizado para colocar o resultado da pesquisa no request ou na sessão 
+*-----------------------------+---------------------------------------------------+
+  search-result-scope         | Scope em que onde o resultado da pesquisa será colocado.
+*-----------------------------+---------------------------------------------------+
+  count                       | Número de registos apresentados em cada página
+*-----------------------------+---------------------------------------------------+
+  result-record-limit         | Número de registos limite da pesquisa
+*-----------------------------+---------------------------------------------------+
+  query-timeout               | Timout em segundos para executar query
+*-----------------------------+---------------------------------------------------+
+  select-all-result-params    | Seleccionar todos os result params por defeito
+*-----------------------------+---------------------------------------------------+
+  hide-duplicated-result-params | Esconde os valores repetidos da linha anterior
+*-----------------------------+---------------------------------------------------+
+  hide-duplicated-html-result-params | Esconde os valores repetidos da linha anterior só em html
+*-----------------------------+---------------------------------------------------+
+  exporter-filename-prefix    | Permite redifinir o nome do ficheiro exportado
+*-----------------------------+---------------------------------------------------+
+  exporter-compression        | Permite definir compressão no ficheiro exportado
+*-----------------------------+---------------------------------------------------+
+  exporter-compression-record | Permite definir a partir de quantos registos se pretende a compressão
+*-----------------------------+---------------------------------------------------+
+
+
+  De seguida é apresentado o DTD correspondente.
+
++---+
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!ENTITY % scope 
+  "request|session">
+
+<!ENTITY % boolean 
+  "true|false">
+  
+<!ELEMENT web-search-config 
+  (exporter*, default-search-properties?, search+)>
+
+<!ELEMENT exporter EMPTY>
+<!ATTLIST exporter 
+  name                CDATA       #REQUIRED
+  class               CDATA       #REQUIRED
+  template            CDATA       #REQUIRED
+  velocity            (%boolean;) "true"
+  html-header         CDATA       #IMPLIED
+  html-footer         CDATA       #IMPLIED
+>
+
+<!ELEMENT search (result-view)*>
+<!ATTLIST search 
+  name                 CDATA      #REQUIRED
+  search-view          CDATA      #REQUIRED
+  result-view          CDATA      #REQUIRED
+  search-form          CDATA      "searchForm"
+  search-form-scope    (%scope;)  "request"
+  search-form-class    CDATA      "pt.maisis.search.web.SearchForm"
+  search-result        CDATA      "result"
+  search-result-scope  (%scope;)  "request"
+  count                CDATA      #IMPLIED
+  result-record-limit  CDATA      #IMPLIED
+  query-timeout        CDATA      #IMPLIED
+  select-all-result-params CDATA  "true"
+  hide-duplicated-result-params CDATA  "false"
+  hide-duplicated-html-result-params CDATA  "false"
+  exporter-filename-prefix CDATA  #IMPLIED
+  exporter-compression CDATA      #IMPLIED
+  exporter-compression-record CDATA #IMPLIED
+>
+
+<!ELEMENT result-view EMPTY>
+<!ATTLIST result-view 
+  format               CDATA      #REQUIRED
+  name                 CDATA      #REQUIRED
+>
++---+

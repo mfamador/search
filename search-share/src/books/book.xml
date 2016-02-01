@@ -1,0 +1,19 @@
+<!-- mvn doxia:render-books -->
+<book>
+  <id>search-share-2.1.3</id>
+  <title>Search Framework</title>
+  <chapters>
+    <chapter>
+      <id>bind</id>
+      <title>Search Share 2.1.3</title>
+      <sections>
+        <section>
+          <id>index</id>
+        </section>
+        <section>
+          <id>configuration</id>
+        </section>
+      </sections>
+    </chapter>
+  </chapters>
+</book>

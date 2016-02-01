@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE search-metadata PUBLIC 
+"-//Maisis//DTD Search MetaData 1.5//EN" 
+"http://www.maisis.pt/search/dtds/search-metadata_1_5.dtd">
+
+
+<search-metadata>
+  <name>searchTest</name>
+  <label>Search Test</label>
+  <description>Search Test</description>
+  <search-engine-class>pt.maisis.search.dao.db.SearchEngineDaoImpl</search-engine-class> 
+
+  <!-- 
+       Neste momento só é possível utilizar datasources via JNDI.
+       
+       TODO: É preciso melhorar isto.
+             O melhor talvez seja possibilitar no ficheiro search-config.xml,
+             definir uma, ou mais, datasources directamente.
+             Depois, nos ficheiros de definição das pesquisas só se deve
+             especificar o nome da datasource (JNDI name).
+  -->
+  <data-source>java:comp/env/jdbc/SearchDS</data-source>
+  
+  <table-source>SEARCH_TEST</table-source>
+  
+  <search-params>
+        <search-param>
+      <name>id</name>
+      <field>ID</field>
+      <operator>=</operator>
+      <container>
+        <label>Id</label>
+        <type>text</type>
+        <size>128</size>
+	<validation>
+	  <converter>number</converter>
+	  <min-value>1</min-value>
+	  <max-value>10</max-value>
+	</validation>
+      </container>
+    </search-param>
+    
+    <search-param>
+      <name>name</name>
+      <field>NAME</field>
+      <operator>=</operator>
+      <container>
+        <label>Name</label>
+        <type>text</type>
+        <size>128</size>
+	<validation>
+	  <converter>date</converter>
+	  <converter-properties>
+	    <property>
+	      <name>pt</name>
+	      <value>MM</value>
+	    </property>
+	    <property>
+	      <name>en</name>
+	      <value>MM</value>
+	    </property>
+	  </converter-properties>
+	</validation>
+      </container>
+    </search-param>
+  </search-params>
+
+  <result-params>
+    <result-param>
+      <name>id</name>
+      <search-label>Id</search-label>
+      <fields>
+        <field>ID</field> 
+      </fields>
+      <align>right</align>
+      <width>45</width>
+      <height>20</height>
+    </result-param>
+    
+    <result-param>
+      <name>name</name>
+      <search-label>Name</search-label>
+      <fields>
+        <field>NAME</field>
+      </fields>
+      <align>left</align>
+      <width>80</width>
+      <height>20</height>
+    </result-param>
+  </result-params>
+</search-metadata>

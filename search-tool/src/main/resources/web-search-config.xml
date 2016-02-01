@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE web-search-config PUBLIC 
+"-//Maisis//DTD Web Search Config 1.0//EN" 
+"http://www.maisis.pt/search/dtds/web-search-config_1_0.dtd">
+
+<web-search-config>
+
+  <search 
+    name="utilizador"
+    search-form="searchForm"
+    search-form-scope="session"
+    search-view="search.jsp"
+    result-view="search.jsp"/> 
+
+</web-search-config>

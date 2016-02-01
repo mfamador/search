@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE web-search-config PUBLIC 
+"-//Maisis//DTD Web Search Config 1.5//EN" 
+"http://www.maisis.pt/search/dtds/web-search-config_1_5.dtd">
+
+<web-search-config>
+
+  <!--
+  <exporter
+      name="exporter"
+      class="pt.maisis.search.export.jfreereport.SearchResultExporter"
+      velocity="true"
+      template="search-jfreereport.xml"/>
+  -->
+
+  <!--
+  <globals
+      count=""
+      select-all-result-params=""/>
+  -->
+
+  <!--
+  <defaults
+      results-per-page="15"
+      select-all-result-params="true"/>
+  -->
+
+  <search
+      name="search1"
+      search-form-scope="session"
+      search-view="search1.jsp"
+      result-view="exporter">
+
+    <result-view format="htmlfragment" name="search1.jsp"/>
+    <result-view format="html" name="search1.jsp"/>
+  </search>
+
+</web-search-config>

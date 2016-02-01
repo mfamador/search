@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="search">
+  <bannerLeft>
+    <name>search share</name>
+    <src>../images/logo.gif</src>
+    <href>../index.html</href>
+  </bannerLeft>
+  <version position="left"/>  
+  <skin>
+    <groupId>org.apache.maven.skins</groupId>
+    <artifactId>maven-default-skin</artifactId>
+    <version>1.0</version>
+  </skin>
+  
+  <body>
+    <menu name="Search Share">
+      <item name="Introdução"  href="index.html"/>
+      <item name="Configuração"  href="configuration.html"/>
+      <item name="Taglib" href="tagreference.html"/>
+      <item name="Javadoc" href="apidocs/index.html"/>
+      <item name="Download" href="releases.html"/>
+    </menu>
+    <menu name="Links">
+      <item name="Home" href="../index.html"/>
+    </menu>
+    <menu name="Módulos">
+      <item name="Search Core" href="../search-core/index.html"/>
+      <item name="Search JFreeReport" href="../search-jfreereport/index.html"/>
+      <item name="Search Exemplo" href="../search-example/index.html"/>
+    </menu>
+    <menu name="Descriptors">
+      <item name="Search Share Config" href="search-share-config.html"/>
+    </menu>
+    ${reports}
+  </body>
+</project>

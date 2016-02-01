@@ -1,0 +1,313 @@
+Introdução
+
+  Antes de ser possível utilizar a <framework> é necessário configurá-la.
+  A sua configuração é feita através de ficheiros XML. Estes ficheiros,
+  também chamados de descriptors, são referidos mais à frente.
+
+  No início do processo de configuração, a <framework> lê o descriptor 
+  <<<search-config.xml>>> e os correspondentes descriptors das pesquisas 
+  declarados neste ficheiro (em ambiente web existe ainda o descriptor 
+  <<<web-search-config.xml>>>). À informação lida destes ficheiros damos 
+  o nome de <metadata>.
+  Toda a <metadata> lida dos descriptors é carregada para um modelo de
+  objectos em memória.
+
+  Esta <metadata> é a base de funcionamento da <framework>. Segundo esta
+  informação é possível a geração do layout das pesquisas, formatação e 
+  validação de dados, exportação dos resultados, etc.
+
+  Depois da <framework> ser devidamente configurada, é possível efectuar
+  pesquisas.
+
+  
+Principais Componentes
+  
+  De seguida serão apresentados os principais componentes da <framework>:
+
+  * XML Descriptors
+
+  * Search Servlets
+
+  * Tag Library
+
+  []
+
+
+* XML Descriptors
+
+  Existem três tipos diferentes de ficheiros de configuração (descriptors
+  XML). Estes descriptors são de seguida apresentados pela ordem que são
+  normalmente criados ou modificados:
+
+  [[1]] {{{#Descriptors_das_Pesquisas}Descriptors das Pesquisas}}
+        - permitem definir a metadata específica para cada pesquisa.
+
+  [[2]] {{{#Search_Config}Search Config}}
+        - descriptor que permite declarar as pesquisas (criadas na fase anterior)
+        a serem consideradas pela <framework>.
+
+  [[3]] {{{#Web_Search_Config}Web Search Config}}
+        - descriptor que permite configurar, para ambiente web, as pesquisas 
+        declaradas no passo anterior.
+
+  []
+  
+
+** {Descriptors das Pesquisas}
+
+  Todas as pesquisas são definidas em descriptors XML. Nestes descriptors 
+  define-se toda a informação (metadata) específica da pesquisa. Como por 
+  exemplo, os campos que devem ser apresentados no formulário de pesquisa, 
+  tipos de validação, formatação, etc.
+
+  Esta metadata poderá ser decomposta em dois grupos principais. Nomeadamente,
+  no grupo dos Search Params (Critérios de Pesquisa) e no grupo relativo aos
+  Result Params (Campos de Retorno).
+
+  * <<Search Params>> - os search params permitem definir quais os critérios 
+  de pesquisa a apresentar no formulário de pesquisa. 
+  Por exemplo, para pesquisar os dados relativos aos utilizadores de um dado 
+  sistema, poderá ser necessário filtrar os utilizadores em função de um dado 
+  critério (nome, idade, etc).
+
+  * <<Result Params>> - os result params correspondem aos campos de retorno que
+  deverão ser devolvidos pela <framework> no resultado de uma pesquisa.
+  Recorrendo ao exemplo anterior, poder-se-á desejar devolver o nome e telefone
+  no resultado da pesquisa dos utilizadores. Por outro lado, a <framework> permite
+  também definir todos os possíveis campos de retorno de uma dada pesquisa, dos
+  quais, no momento da pesquisa propriamente dita, o utilizador da aplicação 
+  poderá seleccionar quais deles está interessado em visualizar.
+
+  []
+
+  Exemplo de um descriptor XML para uma dada pequisa:
+
++--+
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE search-metadata PUBLIC 
+"-//Maisis//DTD Search MetaData 1.5//EN" 
+"http://www.maisis.pt/search/dtds/search-metadata_1_5.dtd">
+
+<search-metadata>
+  <name>exemplo</name>
+  <label>Exemplo</label>
+  <description>Exemplo de uma pesquisa</description>
+  <table-source>UTILIZADOR</table-source>
+          
+  <search-params>
+    <search-param>
+      <name>nome</name>
+      <field>upper(NOME)</field>
+      <operator>LIKE</operator>
+      <container>
+        <label>Nome</label>
+        <type>text</type>
+        <size>160</size>
+        <input-size>50</input-size>
+        <validation>
+          <converter>sqllike</converter>
+        </validation>
+      </container>
+    </search-param>
+  </search-params>
+
+  <result-params>
+    <result-param>
+      <name>nome</name>
+      <search-label>Nome</search-label>
+      <fields>
+        <field>NOME</field> 
+      </fields>
+      <align>left</align>
+      <width>241</width>
+      <height>15</height>
+    </result-param>
+  </result-params>
+</search-metadata>
++---+
+
+  <<Nota:>> Para um detalhe exaustivo dos elementos constituíntes deste 
+  descriptor XML ver {{{search-metadata.html} Search MetaData}}.
+
+
+
+** {Search Config}
+
+  Para que uma dada pesquisa seja reconhecida é necessário dá-la a conhecer à 
+  <framework>. Para tal é necessário criar o ficheiro <<<search-config.xml>>>, 
+  caso ainda não tenha sido criado, e colocá-lo na raiz do <<<CLASSPATH>>>.
+  Por exemplo, em ambiente web basta colocar este ficheiro em 
+  <<<WEB-INF/classes>>>.
+  
+  <<Nota:>> A criação deste ficheiro é feita uma única vez (assim que a 
+  primeira pesquisa é criada). À medida que vão sendo criadas novas pesquisas, 
+  é necessário alterar este ficheiro e declarar estas novas pesquisas.
+
+  Exemplo do ficheiro <<<search-config.xml>>>:
+
++---+
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE search-config PUBLIC 
+"-//Maisis//DTD Search Configuration 1.5//EN" 
+"http://www.maisis.pt/search/dtds/search-config_1_5.dtd">
+
+<search-config>
+
+  <!-- Global datasource -->
+  <data-source-name>
+    java:comp/env/jdbc/SearchEngineDataSource
+  </data-source-name>
+
+  <!-- Descriptors das pesquisas -->
+  <search-descriptors>
+    <descriptor>descriptors/search-example.xml</descriptor>
+  </search-descriptors>
+
+</search-config>
++---+
+
+  <<Nota:>> Para um detalhe exaustivo dos elementos constituíntes deste 
+  descriptor XML ver {{{search-config.html}Search Config}}.
+
+
+** {Web Search Config}
+
+  Para tirar partido desta <framework> em ambiente web, é ainda necessário 
+  configurar o ficheiro <<<web-search-config.xml>>>.
+  Este ficheiro deve ser criado e colocado na raiz do <<<CLASSPATH>>> (como 
+  o ficheiro <<<search-config.xml>>>).
+
+  Exemplo do ficheiro <<<web-search-config.xml>>>:
+
++---+
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE web-search-config PUBLIC 
+"-//Maisis//DTD Web Search Config 1.5//EN" 
+"http://www.maisis.pt/search/dtds/web-search-config_1_5.dtd">
+
+<web-search-config>
+  <search 
+    name="exemplo"
+    search-view="search.jsp"
+    result-view="search_result.jsp"
+    search-form="searchForm"
+    search-form-scope="request"
+    search-result="resultado"/>
+</web-search-config>
++---+
+
+  Em termos gerais, o que se declara neste ficheiro é o nome da pesquisa a 
+  disponibilizar em ambiente web, bem como as <views> (HTML, JSP, etc.)  
+  utilizadas para apresentar o formulário de pesquisa e os resultados das 
+  pesquisas (pode ser a mesma <view>).
+
+  <<Nota:>> Para um detalhe exaustivo dos elementos constituíntes deste 
+  documento XML ver {{{web-search-config.html} Web Search Config}}.
+
+
+
+* Search Servlets
+
+  Para utilizar esta framework em ambiente web é, ainda, necessário configurar 
+  a servlet search no descriptor <web.xml>.
+  De seguida é apresentado um exemplo de como fazer essa configuração:
+
++---+
+  <!-- search servlet -->
+  <servlet>
+    <servlet-name>search</servlet-name>
+    <servlet-class>pt.maisis.search.web.SearchServlet</servlet-class>
+    <init-param>
+      <param-name>hideDuplicatedResultParams</param-name>
+      <param-value>false</param-value>
+    </init-param> 
+    <init-param>
+      <param-name>hideDuplicatedHtmlResultParams</param-name>
+      <param-value>true</param-value>
+    </init-param> 
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <!-- prepare search servlet -->
+  <servlet>
+    <servlet-name>prepareSearch</servlet-name>
+    <servlet-class>pt.maisis.search.web.PrepareSearchServlet</servlet-class>
+    <init-param>
+      <param-name>count</param-name>
+      <param-value>15</param-value>
+    </init-param>    
+    <init-param>
+      <param-name>selectAllResultParams</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>hideDuplicatedResultParams</param-name>
+      <param-value>false</param-value>
+    </init-param> 
+    <init-param>
+      <param-name>hideDuplicatedHtmlResultParams</param-name>
+      <param-value>true</param-value>
+    </init-param> 
+    <init-param>
+      <param-name>exporterFilenamePrefix</param-name>
+      <param-value>report</param-value>
+    </init-param> 
+    <init-param>
+      <param-name>exporterCompression</param-name>
+      <param-value>true</param-value>
+    </init-param> 
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>search</servlet-name>
+    <url-pattern>/search</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>prepareSearch</servlet-name>
+    <url-pattern>/prepareSearch</url-pattern>
+  </servlet-mapping>
++---+
+
+  A servlet <search> é utilizada para delegar pedidos de pesquisa para a 
+  <framework>.
+  Por sua vez a servlet <prepareSearch> é utilizada para preparar o
+  formulário de pesquisa, de uma da pesquisa, de forma a serem apresentados
+  os valores por defeito, definidos no descriptor da pesquisa.
+
+  A servlet <ajaxSearch> é utilizada para suportar pedidos ajax.
+
+  Para utilizar as funcionalidades AJAX deve-se configurar a servlet <ajaxSearch> da seguinte forma:
++---+
+  <!-- ajax search servlet -->
+  <servlet>
+    <servlet-name>ajaxSearch</servlet-name>
+    <servlet-class>pt.maisis.search.web.AjaxSearchServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>ajaxSearch</servlet-name>
+    <url-pattern>/ajaxSearch</url-pattern>
+  </servlet-mapping>
++---+
+
+
+* Tag Library
+
+  A <framework> também disponibiliza uma <custom tag library> para facilitar a 
+  sua utilização em ambiente web.
+  Tags para gerar o formulário de pesquisa, fazer o rendering dos resultados
+  das pesquisas, apresentar os erros decorridos numa pesquisa, entre outras,
+  estão documentadas em {{{tagreference.html}Taglib}}.
+
+  Normalmente, para uma dada aplicação, define-se uma ou mais templates com
+  o <layout> desejado para o formulário de pesquisa e para a apresentação
+  dos resultados. Depois, basta ir adicionando novas pesquisas ao sistema e
+  reutilizar o mesmo layout. No entanto, pode-se, se desejado ou necessário, 
+  definir templates específicas para cada uma das pesquisas.
+

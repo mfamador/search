@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!--
+     DTD Search Configuration v1.0
+
+     Para suportar a validação do ficheiro de configuração, é 
+     necessário incluir o seguinte DOCTYPE no início do 
+     ficheiro XML (depois da declaração "xml"):
+
+     <!DOCTYPE search-config PUBLIC 
+          "-//Maisis//DTD Search Index Configuration 1.0//EN" 
+          "http://www.maisis.pt/search/dtds/search-index-config_1_0.dtd">
+-->
+
+
+<!ELEMENT search-index-config
+ (index-dir?)>
+
+<!ELEMENT index-dir
+  (#PCDATA)>

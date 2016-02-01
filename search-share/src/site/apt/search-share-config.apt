@@ -1,0 +1,127 @@
+﻿Search Share Config
+
+ O <descriptor> <<<search-share-config>>> é constituído pelos seguintes elementos:
+
+*-----------------------------+---------------------------------------------------+
+ <<Elemento>>                 | <<Descrição>>
+*-----------------------------+---------------------------------------------------+
+ search-share-config          | Elemento pai do documento XML.
+*-----------------------------+---------------------------------------------------+
+ message-resources            | Nome do resource bundle a utilizar pela framework.
+*-----------------------------+---------------------------------------------------+
+ data-source-name             | Nome (JNDI) da <datasource> a utilizar por defeito.
+*-----------------------------+---------------------------------------------------+
+ jta-ata-source-name          | Nome (JNDI) da <datasource> JTA a utilizar por defeito.
+*-----------------------------+---------------------------------------------------+
+
+
+* Exemplo do descriptor search-share-config.xml
+
++----------+
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE search-share-config PUBLIC
+"-//Maisis//DTD Search Share Configuration 1.5//EN"
+"http://www.maisis.pt/search/dtds/search-share-config_1_5.dtd">
+
+<search-share-config>
+
+    <message-resources>application</message-resources>
+    <data-source-name>java:comp/env/jdbc/${wcm.share.datasource}</data-source-name>
+    <show-sql>true</show-sql>
+    <auto-create-db>create-drop</auto-create-db>
+
+</search-share-config>
++----------+
+
+
+* DTD
+
+ De seguida é apresentado o DTD para referência.
+
++----------+
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!--
+     DTD Search Share Configuration v1.5
+
+     Para suportar a validação do ficheiro de configuração, é
+     necessário incluir o seguinte DOCTYPE no início do
+     ficheiro XML (depois da declaração "xml"):
+
+     <!DOCTYPE search-share-config PUBLIC
+          "-//Maisis//DTD Search Share Configuration 1.5//EN"
+          "http://www.maisis.pt/search/dtds/search-share-config_1_5.dtd">
+-->
+
+<!--
+  O elemento "search-share-config" contém os valores de configuração por defeito
+  das pesquisas.
+
+  data-source-name              Nome (JNDI) da datasource a utilizar caso
+                                o elemento datasource não seja especificado
+                                no ficheiro de configuração da pesquisa.
+-->
+
+<!ELEMENT search-share-config
+ (message-resources?,
+  data-source-name?,
+  jta-data-source-name?,
+  auto-create-db?,
+  show-sql?,
+  input-report-id?,
+  input-report-name?,
+  input-entity-id?,
+  input-entity-type-id?,
+  input-creator-id?,
+  input-permission-id?,
+  submit-name?,
+  operation?,
+  report-id?,
+  url?)>
+
+<!ELEMENT message-resources
+  (#PCDATA)>
+
+<!ELEMENT data-source-name
+  (#PCDATA)>
+
+<!ELEMENT auto-create-db
+  (#PCDATA)>
+
+<!ELEMENT jta-data-source-name
+  (#PCDATA)>
+
+<!ELEMENT show-sql
+  (#PCDATA)>
+
+<!ELEMENT input-report-id
+  (#PCDATA)>
+
+<!ELEMENT input-report-name
+  (#PCDATA)>
+
+<!ELEMENT input-entity-id
+  (#PCDATA)>
+
+<!ELEMENT input-entity-type-id
+  (#PCDATA)>
+
+<!ELEMENT input-creator-id
+  (#PCDATA)>
+
+<!ELEMENT input-permission-id
+  (#PCDATA)>
+
+<!ELEMENT submit-name
+  (#PCDATA)>
+
+<!ELEMENT operation
+  (#PCDATA)>
+
+<!ELEMENT report-id
+  (#PCDATA)>
+
+<!ELEMENT url
+  (#PCDATA)>
++----------+

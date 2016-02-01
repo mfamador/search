@@ -1,0 +1,37 @@
+﻿<Search Framework Exemplos>
+
+  <<General Availability (GA) Releases:>>
+
+  * Distribuição completa:\
+    Esta distribuição inclui todas as dependências necessárias.
+
+    {{{assembly/search-example-${project.version}-all.zip} search-example-${project.version}-all.zip}}
+
+    
+*---+
+<<NOTA:>> Para executar esta aplicação é necessário definir uma datasource com o nome <<jdbc/SearchDS>>.
+A base de dados utilizada no exemplo (derby) já vem incluída no pacote. No caso do Tomcat, é necessário incluir o driver jdbc (derby-x.jar) no directório <<<common/lib>>>.
+*---+
+  
+  <<Definição da DataSource - Tomcat 5.0.x>>
+
+  Dependendo do web container em uso (incluíndo a versão) a definição da datasource varia. 
+  De seguida é apresentado um exemplo de como definir a datasource no Tomcat 5.0.x.
+
+
++---+
+<Resource name="jdbc/SearchDS" auth="Container"
+          type="javax.sql.DataSource"/>
+
+<ResourceParams name="jdbc/SearchDS">
+  <parameter>
+    <name>driverClassName</name>
+    <value>org.apache.derby.jdbc.EmbeddedDriver</value>
+  </parameter>
+  <parameter>
+    <name>url</name>
+    <value>jdbc:derby:webapps/search-example-${project.version}/WEB-INF/classes/search-test-db</value>
+  </parameter>
+</ResourceParams>
++---+
+

@@ -1,0 +1,19 @@
+package pt.maisis.search.validator;
+
+import junit.framework.TestCase;
+
+
+/**
+ * Testes para a classe {@link AlphabeticValidator}.
+ *
+ * @version 1.0
+ */
+public class AlphabeticValidatorTest extends TestCase {
+
+    public void testValidator() {
+        AlphabeticValidator validator = new AlphabeticValidator();
+
+        assertTrue(validator.isValid("abcdef"));
+        assertFalse(validator.isValid("1a"));
+    }
+}

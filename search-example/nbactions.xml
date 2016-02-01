@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>CUSTOM-Tomcat Deploy</actionName>
+            <displayName>Tomcat Deploy</displayName>
+            <goals>
+                <goal>clean</goal>
+                <goal>package</goal>
+                <goal>tomcat:deploy</goal>
+                
+            </goals>
+        </action>
+        <action>
+            <actionName>CUSTOM-Tomcat Undeploy Deploy</actionName>
+            <displayName>Tomcat Undeploy Deploy</displayName>
+            <goals>
+                <goal>clean:clean</goal>
+                <goal>package</goal>
+                <goal>tomcat:undeploy</goal>
+                <goal>tomcat:deploy</goal>
+            </goals>
+        </action>
+    </actions>

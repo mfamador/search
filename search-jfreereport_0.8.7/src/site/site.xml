@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="search">
+  <bannerLeft>
+    <name>search core</name>
+    <src>../images/logo.gif</src>
+    <href>../index.html</href>
+  </bannerLeft>
+
+  <version position="left"/>  
+
+  <body>
+    <menu name="Search JFreeReport">
+      <item name="Introdução"  href="index.html"/>
+      <item name="Download" href="releases.html"/>
+      <item name="Javadoc" href="apidocs/index.html"/>
+    </menu>
+
+    <menu name="Links">
+      <item name="Home" href="../index.html"/>
+    </menu>
+
+    <menu name="Módulos">
+      <item name="Search Core" href="../search-core/index.html"/>
+      <item name="Search Exemplo" href="../search-example/index.html"/>
+    </menu>
+
+    ${reports}
+
+  </body>
+</project>

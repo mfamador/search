@@ -1,0 +1,42 @@
+<!-- mvn doxia:render-books -->
+<book>
+    <id>search-core-2.1.3</id>
+    <title>Search Framework</title>
+    <author>Marco Amador</author>
+    <date/>
+    <chapters>
+        <chapter>
+            <id>bind</id>
+            <title>Search Core 2.1.3</title>
+            <sections>
+                <section>
+                    <id>index</id>
+                </section>
+                <section>
+                    <id>i18n</id>
+                </section>
+                <section>
+                    <id>format</id>
+                </section>
+                <section>
+                    <id>validation</id>
+                </section>
+                <section>
+                    <id>sql-template</id>
+                </section>
+                <section>
+                    <id>search-config</id>
+                </section>
+                <section>
+                    <id>web-search-config</id>
+                </section>
+                <section>
+                    <id>search-example</id>
+                </section>
+                <section>
+                    <id>search-metadata</id>
+                </section>
+            </sections>
+        </chapter>
+    </chapters>
+</book>

@@ -1,0 +1,24 @@
+<Search Framework Releases>
+
+  * <<Search Framework Core:>>\
+    Framework propriamente dita.
+
+    {{{search-core/releases.html} Core Releases}}
+
+
+  * <<Search Framework JFreeReport:>>\
+    Framework para exportação.
+
+    {{{search-jfreereport/releases.html} JFreereport Releases}}
+
+
+  * <<Search Framework Share:>>\
+    Framework para para gravação e partilha de relatórios.
+
+    {{{search-share/releases.html} Share Releases}}
+
+
+  * <<Search Framework Example:>>\
+    Simples exemplo.
+
+    {{{search-example/releases.html} Example Releases}}

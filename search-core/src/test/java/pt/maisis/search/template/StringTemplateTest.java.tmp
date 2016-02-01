@@ -1,0 +1,137 @@
+package pt.maisis.search.template.test;
+
+import org.antlr.stringtemplate.*;
+import junit.framework.TestCase;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.io.StringReader;
+
+/**
+ * Testes para a classe {@link StringTemplate}.
+ *
+ * @version 1.0
+ */
+public class StringTemplateTest extends TestCase {
+
+    public void testStringTemplate() {
+//         StringTemplate template = StringTemplate.getInstance();
+//         Context context;
+//         String result;
+
+//         System.out.println("----------------------------------------------------");
+
+//         context = new Context();
+//         context.setAttribute("nome", "lala");
+//         result = template.eval(context, "$nome$");
+//         // assertEquals("lala", result);
+//         System.out.println(result);
+
+//         context = new Context();
+//         context.setAttribute("nome", java.util.Arrays.asList(new String[] {"lala", "santos"}));
+//         result = template.eval(context, "$nome; separator=\" \"$");
+//         // assertEquals("lala santos", result);
+
+//         System.out.println(result);
+
+//         context = new Context();
+//         context.setAttribute("nome", java.util.Arrays.asList(new String[] {"lala", "santos"}));
+//         result = template.eval(context, "$nome:{ $it$ }$");
+//         // assertEquals("lala santos", result);
+
+//         System.out.println(result);
+
+//         context = new Context();
+//         Map map = new HashMap();
+//         map.put("firstname", "lala");
+//         map.put("lastname", "santos");
+
+//         context.setAttribute("map", map);
+//         result = template.eval(context, "$map.firstname$ $map.lastname$");
+//         // assertEquals("lala", result);
+//         System.out.println(result);
+
+//         context.setAttribute("numbers", new int[] {1,2,3});
+//         result = template.eval(context, "$numbers:{n | sum+=$n$ }$");
+//         // assertEquals("lala", result);
+//         System.out.println(result);
+
+//         System.out.println("----------------------------------------------------");
+
+
+        System.out.println("====================================================");
+
+        String sql
+            = "select"
+            + " $if(count)$"
+            + "   count(*)"
+            + " $else$"
+            + "  a.NOME, a.NUM_EMPREGADO, b.NOME as TIPO, a.DATA, a.ID"
+            + " $endif$"
+            + "from "
+            + "  UTILIZADOR a,"
+            + "  TIPO_UTILIZADOR b"
+            + "where"
+            + "  a.ID_TIPO_UTILIZADOR = b.ID"
+            + "  and $sps(params)$"
+            + "$if(!count)$"
+            + "  order by $o()$"
+            + "$endif$";
+
+
+        StringTemplateErrorListener error =
+            new StringTemplateErrorListener() {
+                public void error(String msg, Throwable e) {
+                    System.out.println(msg + e);
+                }
+                public void warning(String msg) {
+                    System.out.println(msg);
+                }
+            };
+
+        StringTemplateGroupLoader loader = new CommonGroupLoader("st", error);
+        StringTemplateGroup.registerGroupLoader(loader);
+        StringTemplateGroup subgroup = new StringTemplateGroup("stmt");
+        subgroup.setSuperGroup("sql");
+
+        List params = new ArrayList();
+        Map param = new HashMap();
+        param.put("nome", "nome");
+        param.put("operador", "=");
+        param.put("valor", "1");
+        params.add(param);
+
+        param = new HashMap();
+        param.put("nome", "morada");
+        param.put("operador", "=");
+        param.put("valor", "2");
+        params.add(param);
+
+        StringTemplate st = new StringTemplate(subgroup, sql);
+        st.setPassThroughAttributes(true);
+        st.setAttribute("params", params);
+        st.setAttribute("valor", "xpto");
+        st.setAttribute("operador", "in");
+
+        System.out.println(st);
+
+
+        
+//         group = new StringTemplateGroup
+//             (new StringReader(templates), 
+//              org.antlr.stringtemplate.language.DefaultTemplateLexer.class);
+
+//         StringTemplate t = group.getInstanceOf("vardef");
+//         t.setAttribute("type", "int");
+//         t.setAttribute("name", "foo");
+//         System.out.println(t);
+
+//         t = group.getInstanceOf("method");
+//         t.setAttribute("type", "int");
+//         t.setAttribute("name", "foo");
+//         System.out.println(t);
+        
+        System.out.println("====================================================");
+    }
+}

@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="search">
+  <bannerLeft>
+    <name>search core</name>
+    <src>../images/logo.gif</src>
+    <href>../index.html</href>
+  </bannerLeft>
+  
+  <version position="left"/>  
+  
+  <skin>
+    <groupId>org.apache.maven.skins</groupId>
+    <artifactId>maven-default-skin</artifactId>
+    <version>1.0</version>
+  </skin>
+  
+  <body>
+    <menu name="Search Core">
+      <item name="Introdução"  href="index.html"/>
+      <item name="I18N" href="i18n.html"/>
+      <item name="Format" href="format.html"/>
+      <item name="Validation" href="validation.html"/>
+      <item name="FAQ" href="faq.html"/>
+      <item name="SQL" href="sql-template.html"/>
+      <item name="Taglib" href="tagreference.html"/>
+      <item name="Javadoc" href="apidocs/index.html"/>
+      <item name="Download" href="releases.html"/>
+    </menu>
+    
+    <menu name="Links">
+      <item name="Home" href="../index.html"/>
+    </menu>
+    
+    <menu name="Descriptors">
+      <item name="Search Config" href="search-config.html"/>
+      <item name="Search MetaData" href="search-metadata.html"/>
+      <item name="Web Search Config" href="web-search-config.html"/>
+    </menu>
+    
+    <menu name="Módulos">
+      <item name="Search Share" href="../search-share/index.html"/>
+      <item name="Search JFreeReport" href="../search-jfreereport/index.html"/>
+      <item name="Search Exemplo" href="../search-example/index.html"/>
+    </menu>
+    
+    ${reports} 
+    
+  </body>
+</project>

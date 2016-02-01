@@ -1,0 +1,13 @@
+Instalação
+
+  A framework disponibiliza vários pacotes:
+  
+*-----------------------------+---------------------------------------------------+
+||  Ficheiro                  || Descrição                                       ||
+*-----------------------------+---------------------------------------------------+
+| search-core-x.x-bin.zip     | Pacote de distribuição do core da framework.
+*-----------------------------+---------------------------------------------------+
+| search-core-x.x-dep.zip     | Pacote de distribuição do core da framework com todas as dependências.
+*-----------------------------+---------------------------------------------------+
+| search-example-x.x-all.zip  | Pacote de distribuição do exemplo.
+*-----------------------------+---------------------------------------------------+

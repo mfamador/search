@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<faqs title="Frequently Asked Questions">
+  <part id="geral">
+    <title>Geral</title>
+    <faq id="1">
+      <question>
+        O que é preciso para utilizar a framework de pesquisa?
+      </question>
+      <answer>
+        <p>
+          Em primeiro lugar é necessário fazer download do 
+          <a href="releases.html">pacote de distribuição</a> desejado.<br/>
+          É, também, aconselhável fazer download do <a href="../search-example/releases.html">exemplo</a>.
+        </p>
+        <p>
+          De seguida, o melhor a fazer é dar uma vista de olhos na documentação do exemplo, bem como no código fonte.
+        </p>
+      </answer>
+    </faq>
+
+    <faq id="2">
+      <question>
+        Preciso de criar uma pesquisa que permita capturar informação de várias tabelas. 
+        No entanto, não tenho a possibilidade de criar uma view. É possível 
+        utilizar a framework de pesquisa neste caso?
+      </question>
+      <answer>
+        <p>
+          Apesar de ser aconselhável a utilização de uma tabela ou view para capturar
+          a informação da base de dados é, também, possível definir o statement SQL desejado
+          recorrendo ao elemento &lt;sql-template&gt; no descriptor XML.
+        </p>
+        <p>
+          Por exemplo...
+        </p>
+      </answer>
+    </faq>
+  </part>
+</faqs>

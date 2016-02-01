@@ -1,0 +1,109 @@
+﻿SQL
+
+  A framework de pesquisa, neste momento, só permite pesquisar dados em bases de
+  dados relacionais. Desta forma precisa, a dada altura, de gerar um statement
+  sql para capturar os dados da base de dados em função da metadata especificada
+  nos descriptors das pesquisas e dos dados introduzidos pelo utilizador.
+
+  Existem duas formas de gerar o SQL:
+
+  * {{{#SQL_Dinamico}SQL Dinâmico}} gerado automaticamente pela framework
+
+  * {{{#Template_SQL}Template SQL}} que permite ao utilizador maior controlo 
+    sobre o statement SQL a ser gerado.
+
+
+* {SQL Dinamico}
+
+  A framework de pesquisa é capaz de gerar SQL dinamicamente com base na 
+  metadata definida nos descriptors das pesquisas.
+  Para o efeito em função dos <<<search-params>>>, <<<result-params>>> 
+  seleccionados e no elemento <<<table-source>>> (pode ser uma tabela ou view)
+  a framework gera o SQL apropriado.
+  
+  Neste caso, a framework utiliza a implementação <<<SearchEngineDaoImpl>>>.
+
+  Exemplo:
+
++---+
+<search-metadata>
+  <name>search</name>
+   ...
+  <table-source>UTILIZADOR</table-source>
+   ...
+</search-metadata>
++---+
+
+
+* {Template SQL}
+
+  Por vezes a utilização de uma tabela ou view não é possível ou suficientemente
+  flexível. Nestes casos existe a possibilidade de especificar o <statement sql>
+  directamente no descriptor XML da pesquisa.
+
+  Exemplo:
+
++---+
+<search-metadata>
+  <name>search</name>
+   ...
+  <sql-template>
+    select ...
+  </sql-template>
+   ...
+</search-metadata>
++---+
+
+  No elemento <<<sql-template>>> define-se um <statement sql> dinâmico.
+  Para tal a framework de pequisa utiliza a framework 
+  {{{http://velocity.apache.org}Velocity}} para permitir esse dinamismo.
+
+  No contexto da template são colocadas as seguintes variáveis:
+
+*-----------------------------+---------------------------------------------------+
+ <<Variável>>                 | <<Descrição>>
+*-----------------------------+---------------------------------------------------+
+ queryType                    | Permite identificar o tipo de query a executar (<count> ou <get>).
+                              | Esta variável é importante sempre que se capturam os resultados das pesquisas de forma paginada. Nestes casos, por questões de eficiência, primeiro é feito um count para capturar o número total de resultados. Só depois é que são capturados os resultados propriamente ditos.
+*-----------------------------+---------------------------------------------------+
+ searchParams                 | Critérios de pesquisa.
+                              | Consiste nos critérios de pesquisa para os quais o utilizador introduziu algum valor.
+*-----------------------------+---------------------------------------------------+
+ resultParams                 | Esta variável contém uma lista com os campos de retorno (<result params>) a devolver no resultado da pesquisa.
+*-----------------------------+---------------------------------------------------+
+ orderParams                  | Campos a ordenar.
+*-----------------------------+---------------------------------------------------+
+ sql                          | Variável de contexto que representa uma <tool> que pode ser utilizada para facilitar no processo de criação da <query>. Para mais informação sobre esta tool ver {{{apidocs/pt/maisis/search/util/SearchSqlTool}SearchSqlTool}}.
+*-----------------------------+---------------------------------------------------+
+
+  <<Nota:>> Para além das variáveis descritas nesta tabela, são também colocados no contexto da template todos os critérios de pesquisa (<search params>) especificados no descriptor da pesquisa e para os quais foram introduzidos valores. Por exemplo, se utilizador introduzir um valor para um <search param> chamado <username> ele fica disponível no contexto da template através do nome <<<$username>>>.
+
+  De seguida serão apresentados alguns exemplos para melhor exemplificar as 
+  diversas formas de definir a template sql.
+
+  A definição mais simples de uma template sql poderá ser tipo a seguinte:
+
++---+
+<sql-template>
+   select
+     $sql.csv($resultParams)
+   from
+     table_a a,
+     table_b b
+   where
+     a.id = b.id and
+     $sql.criterias($searchParams)
+   order by
+     $sql.csv($orderParams)
+</sql-template>
++---+
+
+  Neste exemplo é definido o esqueleto do statement SQL. Os <result params>,
+  os <search params> e os <order params> são inseridos posteriormente quando
+  for feito o parse da template.
+  A variável $sql corresponde à instância da classe 
+  {{{apidocs/pt/maisis/search/util/SearchSqlTool}SearchSqlTool}} que é colocada
+  no contexto da template e que é utilizada para fazer o rendering apropriado
+  dos parâmetros.
+  
+  

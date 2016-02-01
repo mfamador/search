@@ -1,0 +1,159 @@
+﻿Search Config
+
+ O <descriptor> <<<search-config>>> é constituído pelos seguintes elementos:
+
+*-----------------------------+---------------------------------------------------+
+ <<Elemento>>                 | <<Descrição>>
+*-----------------------------+---------------------------------------------------+
+ search-config                | Elemento pai do documento XML.
+*-----------------------------+---------------------------------------------------+
+ message-resources            | Nome do resource bundle a utilizar pela framework.
+*-----------------------------+---------------------------------------------------+
+ data-source-name             | Nome (JNDI) da <datasource> a utilizar por defeito.
+                              | É possível na {{{search-metadata.html}metadata}} de cada pesquisa especificar uma outra <datasource>.
+*-----------------------------+---------------------------------------------------+
+ search-engine-class          | Implementação do motor de pesquisa ({{{apidocs/pt/maisis/search/dao/SearchEngineDao.html}SearchEngineDao}}) a utilizar.
+                              | Por defeito utiliza a classe {{{apidocs/pt/maisis/search/dao/db/SearchEngineDaoImpl.html}SearchEngineDaoImpl}}.
+                              | É possível na {{{search-metadata.html}metadata}} de cada pesquisa especificar uma outra implementação.
+*-----------------------------+---------------------------------------------------+
+ search-engine-metadata-class | Implementação responsável por capturar a <metadata> de todos os <search descriptors> especificados neste ficheiro.
+*-----------------------------+---------------------------------------------------+
+ search-formatters            | Elemento pai de todos os <formatters>.
+*-----------------------------+---------------------------------------------------+
+ {{{#Formatter}formatter}}    | Elemento que permite definir um novo <formatter>.
+                              | Deve conter os elementos <name> e <class>.
+*-----------------------------+---------------------------------------------------+
+ search-converters            | Elemento pai de todos os <converters>.
+*-----------------------------+---------------------------------------------------+
+ {{{#Converter}converter}}    | Elemento que permite definir um novo <converter>.
+                              | Deve conter os elementos <name> e <class>.
+*-----------------------------+---------------------------------------------------+
+ name                         | Permite definir o nome do <formatter> ou <converter>.
+*-----------------------------+---------------------------------------------------+
+ class                        | Permite definir a implementação do <formatter> ou <converter>.
+*-----------------------------+---------------------------------------------------+
+ search-descriptors           | Elemento pai de todos os <search descriptors>.
+*-----------------------------+---------------------------------------------------+
+ descriptor                   | Nome do ficheiro que corresponde a um dado <search descriptor>.
+*-----------------------------+---------------------------------------------------+
+
+
+
+* {Formatter}
+
+ Os formatadores são utilizados para formatar os valores resultantes das 
+ pesquisas (<result params>).
+ Para obter mais informação sobre formatadores consulte o link 
+ {{{format.html}Format}}.
+
+
+* {Converter}
+
+ Os <converters> são utilizados na framework de pesquisa para converter 
+ os dados introduzidos pelo utilizador para uma dada pesquisa.
+ Para obter mais informação sobre converters consulte o link 
+ {{{validation.html}Validation}}.
+
+
+* Exemplo do descriptor search-config.xml
+
++----------+
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE search-config PUBLIC 
+    "-//Maisis//DTD Search Configuration 1.5//EN" 
+    "http://www.maisis.pt/search/dtds/search-config_1_5.dtd">
+
+<search-config>
+
+  <data-source-name>
+    java:comp/env/jdbc/SearchEngineDataSource
+  </data-source-name>
+
+
+  <!-- Descriptors das pesquisas -->
+  <search-descriptors>
+    <descriptor>descriptors/search-example-1.xml</descriptor>
+    <descriptor>descriptors/search-example-2.xml</descriptor>
+  </search-descriptors>
+
+
+  <!-- Formatadores específicos de uma dada aplicação -->
+  <search-formatters>
+    <formatter>
+      <name>velocidade</name>
+      <class>pt.ptin.gerex.search.format.VelocidadeFormatter</class>
+    </formatter>
+  </search-formatters>
+
+
+  <!-- Converters específicos de uma dada aplicação -->
+  <search-converters>
+    <converter>
+      <name>linhaRede</name>
+      <class>pt.ptin.gerex.search.validator.LinhaRedeConverter</class>
+    </converter>
+  </search-converters>
+</search-config>
++----------+
+
+
+* DTD
+
+ De seguida é apresentado o DTD para referência.
+
++----------+
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!--
+     DTD Search Configuration v1.0
+
+     Para suportar a validação do ficheiro de configuração, é 
+     necessário incluir o seguinte DOCTYPE no início do 
+     ficheiro XML (depois da declaração "xml"):
+
+     <!DOCTYPE search-config PUBLIC 
+          "-//Maisis//DTD Search Configuration 1.5//EN" 
+          "http://www.maisis.pt/search/dtds/search-config_1_5.dtd">
+-->
+
+<!ELEMENT search-config           
+ (data-source-name?,
+  search-engine-class?,
+  search-engine-metadata-class?,
+  search-descriptors,
+  search-formatters?)>
+
+<!ELEMENT data-source-name
+  (#PCDATA)>
+
+<!ELEMENT search-engine-class
+  (#PCDATA)>
+
+<!ELEMENT search-engine-metadata-class
+  (#PCDATA)>
+
+<!ELEMENT search-descriptors
+  (descriptor+)>
+
+<!ELEMENT descriptor
+  (#PCDATA)>
+
+<!ELEMENT search-formatters
+  (formatter+)>
+
+<!ELEMENT formatter
+  (name, class)>
+
+<!ELEMENT search-validators
+  (validator+)>
+
+<!ELEMENT validator
+  (name, class)>
+
+<!ELEMENT name
+  (#PCDATA)>
+
+<!ELEMENT class
+  (#PCDATA)>
++----------+

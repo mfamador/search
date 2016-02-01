@@ -1,0 +1,836 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE taglib PUBLIC 
+"-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN"
+"http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd">
+
+<taglib>
+    <tlib-version>1.0</tlib-version>
+    <jsp-version>1.2</jsp-version>
+    <short-name>search</short-name>
+    <uri>http://search.maisis.pt/taglib/search</uri>
+    <display-name>Search Framework Tag Library</display-name>
+    <description>
+        Esta library consiste num conjunto de custom tags que facilitam 
+        a utilização da framework de pesquisa num ambiente web.
+    </description>
+    
+        
+    <tag>
+        <name>message</name>
+        <tag-class>pt.maisis.search.web.taglib.MessageTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>
+            Tag que faz que internacionaliza uma determinada key.
+        </description>
+        <attribute>
+            <name>key</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>var</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <example><![CDATA[
+<search:message key="xpto"/>
+        ]]>
+        </example>
+    </tag>
+    
+    
+    <tag>
+        <name>searches</name>
+        <tag-class>pt.maisis.search.web.taglib.SearchesTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>
+            Tag que permite fazer o rendering das pesquisas configuradas no 
+            descriptor 'search-config.xml'. Para cada pesquisa cria a variável 
+            'searchMetaData' (instância de pt.maisis.search.SearchMetaData) e 
+            coloca-a no contexto da tag. Se o atributo 'search' for 
+            especificado, só coloca no contexto da tag a metadata correspondente.
+        </description>
+        <attribute>
+            <name>search</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Nome da pesquisa.</description>
+        </attribute>
+        <example><![CDATA[
+Rendering de todas as pesquisas:
+<select>
+    <search:searches>
+        <option value="${searchMetaData.name}">${searchMetaData.label}</option>
+    </search:searches>
+</select>
+            
+Rendering de uma dada pesquisa:
+<search:searches search="nome">
+    <h1>${searchMetaData.label}</h1>
+</search:searches>
+        ]]>
+        </example>
+    </tag>
+    
+    <tag>
+        <name>pageableResult</name>
+        <tag-class>pt.maisis.search.web.taglib.PageableSearchResultTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>
+            Permite apresentar, de forma paginada, os resultados de uma 
+            pesquisa. Esta tag cria as variáveis 'begin', 'end', 'total', 
+            'totalPages', 'selectedPage' e 'count' e coloca-as no contexto da 
+            página (pageContext).
+            A variável 'begin' contém o índice do primeiro registo da página 
+            actual.
+            A variável 'end' contém o índice do último registo da página actual.
+            A variável 'total' contém o número total de resultados da pesquisa.
+            A variável 'totalPages' contém o número total de páginas.
+            A variável 'selectedPage' contém o índice da página seleccionada.
+            Finalmente, a variável 'count' contém o número total de resultados
+            a apresentar por página.
+            Com esta informação é possível criar o interface gráfico desejado 
+            que permita apresentar ao utilizador os resultados de uma forma 
+            paginada. De seguida é apresentado um exemplo utilizando uma 
+            HTML select.
+        </description>
+        <attribute>
+            <name>search</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Nome da pesquisa.</description>
+        </attribute>
+        <attribute>
+            <name>numberVisiblePages</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                Número de páginas visíveis. As páginas resultantes numa pesquisa 
+                poderão ser apresentadas em grupos. Por exemplo, grupos de 5 
+                páginas (semelhante ao motor de pesquisa google).
+                Se este atributo não fôr especificado é feito o rendering de um 
+                único grupo de páginas.
+            </description>
+        </attribute>
+        <example><![CDATA[
+<search:pageableResult search="${param.search}">
+    ${begin}-${end} de ${total}, Páginas:
+    <search:previousPage>
+        <a href="${url}">&lt;</a>
+    </search:previousPage>
+      
+    <select onchange="location.href=this[this.selectedIndex].value">
+        <search:pages>
+            <c:choose>
+                <c:when test="${selected}">
+                    <option selected>${page}</option>
+                </c:when>
+                <c:otherwise>
+                    <option value="${url}">${page}</option>
+                </c:otherwise>
+            </c:choose>
+        </search:pages>
+    </select>
+      
+    <search:nextPage>
+        <a href="${url}">&gt;</a>
+    </search:nextPage>
+</search:pageableResult>
+        ]]>
+        </example>
+    </tag>
+    
+    <tag>
+        <name>pages</name>
+        <tag-class>pt.maisis.search.web.taglib.PageTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>
+            Permite fazer o rendering das páginas resultantes de uma dada 
+            pesquisa.
+            Esta tag cria as variáveis 'page', 'selected', 'url', 'search', 'total',
+            'count', 'start' e 'selectAllResultParams' no pageContext.
+            A variável 'page' contém o número da página. A variável 'selected' identifica
+            se a variável 'page' é, ou não, a página actual (página seleccionada).
+            A variável 'url' identifica o url a utilizar para apresentar uma dada página. 
+            Esta variável é criada com o único objectivo de facilitar o criador da página. 
+            No entanto, se se desejar, o url pode ser criado à mão com as restantes 
+            variáveis disponíveis no pageContext ('search', 'total', 'count', 'start' e 
+            'selectAllResultParams').
+            Esta tag deve ser utilizada embebida na tag pageableResult.
+        </description>
+        <example><![CDATA[
+<search:pageableResult search="${param.search}">
+    ...
+    <search:pages>
+        <c:choose>
+            <c:when test="${selected}">
+                <span class="page-link-selected">${page}</span>
+            </c:when>
+            <c:otherwise>
+                <span class="page-link"><a href="${url}">${page}</a></span>
+            </c:otherwise>
+        </c:choose>
+    </search:pages>
+    ...
+</search:pageableResult>
+        ]]>
+        </example>
+    </tag>
+    
+    <tag>
+        <name>previousPage</name>
+        <tag-class>pt.maisis.search.web.taglib.PreviousPageTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>
+            Tag que faz o rendering do body caso a página actual não seja a 
+            primeira.
+            Esta tag cria a variável 'url' no pageContext.
+            A variável 'url' identifica o url a utilizar para apresentar a página
+            anterior. 
+            Esta tag deve ser utilizada embebida na tag pageableResult.
+        </description>
+        <attribute>
+            <name>refreshCount</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>action</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <example><![CDATA[
+<search:pageableResult search="${param.search}">
+    ...
+    <search:previousPage>
+        <a href="${url}">&lt;</a>
+    </search:previousPage>
+    ...
+</search:pageableResult>
+        ]]>
+        </example>
+    </tag>
+    
+    <tag>
+        <name>firstPage</name>
+        <tag-class>pt.maisis.search.web.taglib.FirstPageTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>
+            Tag que faz o rendering do body caso a página actual não seja a 
+            primeira.
+            Esta tag cria a variável 'url' no pageContext.
+            A variável 'url' identifica o url a utilizar para apresentar a 
+            primeira página.
+            Esta tag deve ser utilizada embebida na tag pageableResult.
+        </description>
+        <attribute>
+            <name>refreshCount</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>action</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <example><![CDATA[
+<search:pageableResult search="${param.search}">
+    ...
+    <search:firstPage>
+        <a href="${url}">&lt;</a>
+    </search:firstPage>
+    ...
+</search:pageableResult>
+        ]]>
+        </example>
+    </tag>
+    
+    <tag>
+        <name>nextPage</name>
+        <tag-class>pt.maisis.search.web.taglib.NextPageTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>
+            Tag que faz o rendering do body da tag caso exista uma próxima 
+            página a apresentar.
+            Esta tag cria a variável 'url' no pageContext.
+            A variável 'url' identifica o url a utilizar para apresentar a 
+            próxima página. 
+            Esta tag deve ser utilizada embebida na tag pageableResult.
+        </description>
+        <attribute>
+            <name>refreshCount</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>action</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <example><![CDATA[
+<search:pageableResult search="${param.search}">
+    ...
+    <search:nextPage>
+        <a href="${url}">&gt;</a>
+    </search:nextPage>
+    ...
+</search:pageableResult>
+        ]]>
+        </example>
+    </tag>
+    
+    <tag>
+        <name>lastPage</name>
+        <tag-class>pt.maisis.search.web.taglib.LastPageTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>
+        </description>
+        <attribute>
+            <name>refreshCount</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>action</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+
+        <example></example>
+    </tag>
+    
+    <tag>
+        <name>previousGroup</name>
+        <tag-class>pt.maisis.search.web.taglib.PreviousGroupTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>
+            Tag que faz o rendering do body caso o grupo actual de páginas não 
+            for o primeiro.
+            Esta tag cria a variável 'url' no pageContext.
+            A variável 'url' identifica o url a utilizar para apresentar o grupo
+            de páginas anterior.
+            Esta tag deve ser utilizada embebida na tag pageableResult.
+        </description>
+        <attribute>
+            <name>refreshCount</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>action</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <example><![CDATA[
+<search:pageableResult search="${param.search}">
+    ...
+    <search:previousGroup>
+        <a href="${url}">&lt;&lt;</a>
+    </search:previousGroup>
+    ...
+</search:pageableResult>
+        ]]>
+        </example>
+    </tag>
+    
+    <tag>
+        <name>nextGroup</name>
+        <tag-class>pt.maisis.search.web.taglib.NextGroupTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>
+            Tag que faz o rendering do body caso exista um grupo de páginas a 
+            seguir ao grupo de páginas actual.
+            Esta tag cria a variável 'url' no pageContext.
+            A variável 'url' identifica o url a utilizar para apresentar o próximo 
+            grupo de páginas. 
+            Esta tag deve ser utilizada embebida na tag pageableResult.
+        </description>
+        <attribute>
+            <name>action</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <example><![CDATA[
+<search:pageableResult search="${param.search}">
+    ...
+    <search:nextGroup>
+        <a href="${url}">&gt;&gt;</a>
+    </search:nextGroup>
+    ...
+</search:pageableResult>
+        ]]>
+        </example>
+    </tag>
+    
+    <tag>
+        <name>searchMetaData</name>
+        <tag-class>pt.maisis.search.web.taglib.SearchMetaDataTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>
+        </description>
+        <attribute>
+            <name>numberColumns</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>startIndex</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>endIndex</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>search</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Nome da pesquisa.</description>
+        </attribute>
+    </tag>
+    
+    <tag>
+        <name>container</name>
+        <tag-class>pt.maisis.search.web.taglib.ContainerMetaDataTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>
+            Esta tag deve ser utilizada embebida na tag 'searchMetaData'.
+            Permite definir o layout para um dado tipo de container.
+            Esta tag cria as variáveis 'container', 'value'/'values' e 'label' e
+            coloca-as no contexto da página (pageContext).
+            A variável 'container' corresponde à instância de 
+            pt.maisis.search.ContainerMetaData (ver javadoc).
+            A variável 'value' contém o valor actual do container. Caso o valor 
+            corresponda a uma lista de valores, é criada a variável 'values'.
+            A variável 'values' contém uma lista de instâncias de 
+            pt.ptin.search.value.KeyValue (ver javadoc).
+            Finalmente, a variável 'label' corresponde ao label do container
+            traduzido tendo em conta um dado locale. Esta última variável é 
+            útil em situações em que a framework de pesquisa é utilizada em
+            ambientes com vários locales. Caso a tradução não seja necessária
+            pode utilizar-se o método 'label' da variável 'container' (ex:
+            ${container.label}).
+        </description>
+        <attribute>
+            <name>type</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                Tipo de container. Corresponde ao valor especificado no elemento 
+                search-param/container/type do descriptor XML da pesquisa.
+            </description>
+        </attribute>
+        <example><![CDATA[
+<search:searchMetaData ...>
+    ...
+    <search:container type="text">
+        ${label}:
+        <input type="text" 
+            name="searchParam(${container.name})" 
+            maxlength="${container.inputSize}" 
+            value="${value}"/>
+    </search:container>
+    ...
+</search:searchMetaData>
+        ]]>
+        </example>
+    </tag>
+    
+    <tag>
+        <name>startComposite</name>
+        <tag-class>pt.maisis.search.web.taglib.StartCompositeTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>
+            Permite denfinir o layout para marcar o início de um critério de 
+            pesquisa composto. 
+            Esta tag deve ser utilizada embebida na tag searchMetaData.
+        </description>
+        <example><![CDATA[
+<search:searchMetaData ...>
+    ...
+    <search:startComposite>
+        <td>
+    </search:startComposite>
+    ...
+</search:searchMetaData>
+        ]]>
+        </example>
+    </tag>
+    
+    <tag>
+        <name>endComposite</name>
+        <tag-class>pt.maisis.search.web.taglib.EndCompositeTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>
+            Permite denfinir o layout para marcar o fim de um critério de pesquisa 
+            composto. 
+            Esta tag deve ser utilizada embebida na tag searchMetaData.
+        </description>
+        <example><![CDATA[
+<search:searchMetaData ...>
+    ...
+    <search:endComposite>
+        </td>
+    </search:endComposite>
+    ...
+</search:searchMetaData>
+        ]]>
+        </example>
+    </tag>
+    
+    <tag>
+        <name>startRow</name>
+        <tag-class>pt.maisis.search.web.taglib.StartRowTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>
+            Permite definir o layout para marcar o início de uma linha.
+            Esta tag deve ser utilizada embebida na tag searchMetaData.
+        </description>
+        <example><![CDATA[
+<search:searchMetaData ...>
+    ...
+    <search:startRow>
+        <tr>
+    </search:startRow>
+    ...
+</search:searchMetaData>
+        ]]>
+        </example>
+    </tag>
+    
+    <tag>
+        <name>endRow</name>
+        <tag-class>pt.maisis.search.web.taglib.EndRowTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>
+            Permite definir o layout para marcar o fim de uma linha.
+            Esta tag deve ser utilizada embebida na tag searchMetaData.
+        </description>
+        <example><![CDATA[
+<search:searchMetaData ...>
+    ...
+    <search:endRow>
+        </tr>
+    </search:endRow>
+    ...
+</search:searchMetaData>
+        ]]>
+        </example>
+    </tag>
+    
+    <tag>
+        <name>startColumn</name>
+        <tag-class>pt.maisis.search.web.taglib.StartColumnTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>
+            Permite definir o layout para marcar o início de uma nova coluna.
+        </description>
+        <example><![CDATA[
+<search:searchMetaData ...>
+    ...
+    <search:startColumn>
+        </tr>
+    </search:startColumn>
+    ...
+</search:searchMetaData>
+        ]]>
+        </example>
+    </tag>
+    
+    <tag>
+        <name>endColumn</name>
+        <tag-class>pt.maisis.search.web.taglib.EndColumnTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>
+            Permite definir o layout para marcar o fim de uma coluna.
+            Esta tag deve ser utilizada embebida na tag searchMetaData.
+        </description>
+        <example><![CDATA[
+<search:searchMetaData ...>
+    ...
+    <search:endColumn>
+        </td>
+    <search:endColumn>
+    ...
+</search:searchMetaData>
+        ]]>
+        </example>
+    </tag>
+    
+    <tag>
+        <name>result</name>
+        <tag-class>pt.maisis.search.web.taglib.SearchResultTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>
+            Permite fazer o rendering do resultado de uma pesquisa.
+        </description>
+        <attribute>
+            <name>search</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Nome da pesquisa.</description>
+        </attribute>
+        <attribute>
+            <name>showHeader</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Nome da pesquisa.</description>
+        </attribute>
+        <example><![CDATA[
+<search:result search="${param.search}">    
+    <table>
+        <search:resultHeader>
+            <tr>
+                <search:resultHeaderColumn>
+                    <th rowspan="${rowspan}" colspan="${colspan}">
+                        ${resultParam.resultLabel}
+                    </th>
+                </search:resultHeaderColumn>
+            </tr>
+        </search:resultHeader>
+        
+        <search:resultBody>
+            <tr>
+                <search:resultBodyColumn>
+                    <td align="${align}">${value}</td>
+                </search:resultBodyColumn>
+            </tr>
+        </search:resultBody>
+    </table>
+</search:result>
+        ]]>
+        </example>
+    </tag>
+    
+    <tag>
+        <name>resultBody</name>
+        <tag-class>pt.maisis.search.web.taglib.SearchResultBodyTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>
+            Permite fazer o rendering dos resultados de uma pesquisa.
+        </description>
+        <example><![CDATA[
+<search:resultBody>
+    <tr>
+        <search:resultBodyColumn>
+            ...
+        </search:resultBodyColumn>
+    </tr>
+</search:resultBody>
+        ]]>
+        </example>
+    </tag>
+    
+    <tag>
+        <name>resultBodyColumn</name>
+        <tag-class>pt.maisis.search.web.taglib.SearchResultBodyColumnTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>
+            Permite fazer o rendering de um dado campo.
+        </description>
+        <example><![CDATA[
+<search:resultBodyColumn>
+    <td align="${align}">${value}</td>
+</search:resultBodyColumn>
+        ]]>
+        </example>
+    </tag>
+    
+    <tag>
+        <name>resultHeader</name>
+        <tag-class>pt.maisis.search.web.taglib.SearchResultHeaderTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>
+            Permite fazer o rendering da metadata correspondente ao resultado 
+            de uma pesquisa.
+        </description>
+        <example><![CDATA[
+<search:resultHeader>
+    <tr>
+        <search:resultHeaderColumn>
+        ...
+        </search:resultHeaderColumn>
+    </tr>
+</search:resultHeader>
+        ]]>
+        </example>
+    </tag>
+    
+    <tag>
+        <name>resultHeaderColumn</name>
+        <tag-class>pt.maisis.search.web.taglib.SearchResultHeaderColumnTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>
+            Permite fazer o rendering da metadata de uma dada coluna.
+        </description>
+        <example><![CDATA[
+<search:resultHeaderColumn>
+    <th rowspan="${rowspan}" colspan="${colspan}">
+        ${resultParam.resultLabel}
+    </th>
+</search:resultHeaderColumn>
+        ]]>
+        </example>
+    </tag>
+    
+    <tag>
+        <name>resultNoCompositeHeaderColumn</name>
+        <tag-class>pt.maisis.search.web.taglib.SearchResultNoCompositeHeaderColumnTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>
+            Permite fazer o rendering da metadata de uma dada coluna que não seja composite.
+        </description>
+        <example><![CDATA[
+<search:resultNoCompositeHeaderColumn>
+    <th rowspan="${rowspan}" colspan="${colspan}">
+        ${resultParam.resultLabel}
+    </th>
+</search:resulNoCompositetHeaderColumn>
+        ]]>
+        </example>
+    </tag>
+ 
+    <tag>
+        <name>resultMetaData</name>
+        <tag-class>pt.maisis.search.web.taglib.ResultMetaDataTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>
+            Permite apresentar todos os campos de retorno definidos no descriptor
+            XML da pesquisa.
+        </description>
+        <attribute>
+            <name>search</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Nome da pesquisa.</description>
+        </attribute>
+        <example><![CDATA[
+<select name="resultParams" multiple="true">
+    <search:resultMetaData search="${param.search}">
+        <option value="${resultParam.name}">
+            ${resultParam.searchLabel}
+        </option>
+    </search:resultMetaData>
+</select>
+        ]]>
+        </example>
+    </tag>
+    
+    <tag>
+        <name>selectedResultMetaData</name>
+        <tag-class>pt.maisis.search.web.taglib.SelectedResultMetaDataTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>
+            Permite apresentar todos os campos de retorno selecciondados a 
+            apresentar no resultado de uma pesquisa.
+        </description>
+        <attribute>
+            <name>search</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Nome da pesquisa.</description>
+        </attribute>
+        <example><![CDATA[
+<select name="selectedResultParams" multiple="true">
+    <search:selectedResultMetaData search="${param.search}">
+        <option value="${selectedResultParam.name}">
+            ${selectedResultParam.searchLabel}
+        </option>
+    </search:selectedResultMetaData>
+</select>
+        ]]>
+        </example>
+    </tag>
+    
+    <tag>
+        <name>selectedResultMetaDataOrder</name>
+        <tag-class>pt.maisis.search.web.taglib.SelectedResultMetaDataOrderTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>
+            Permite apresentar os campos de retorno a ordenar na pesquisa.
+        </description>
+        <attribute>
+            <name>search</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Nome da pesquisa.</description>
+        </attribute>
+        <example><![CDATA[
+<select name="resultOrder" multiple="true">
+    <search:selectedResultMetaDataOrder search="${param.search}">
+        <option value="${selectedResultParamOrder.name}">
+            ${selectedResultParamOrder.searchLabel}
+        </option>
+    </search:selectedResultMetaDataOrder>
+</select>
+        ]]>
+        </example>
+    </tag>
+    
+    <tag>
+        <name>orderType</name>
+        <tag-class>pt.maisis.search.web.taglib.OrderTypeTag</tag-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <name>search</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Nome da pesquisa.</description>
+        </attribute>
+    </tag>
+    
+    <tag>
+        <name>searchErrors</name>
+        <tag-class>pt.maisis.search.web.taglib.SearchErrorsTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>
+            Faz o rendering dos erros ocorridos numa pesquisa.
+            Esta tag deve ser utilizada embebida na tag searchErrorsAvailable.
+        </description>
+        <example><![CDATA[
+<search:searchErrorsAvailable>
+    <search:searchErrors>
+        ${error}<br/>
+    </search:searchErrors>
+</search:searchErrorsAvailable>
+        ]]>
+        </example>
+    </tag>
+    
+    <tag>
+        <name>searchErrorsAvailable</name>
+        <tag-class>pt.maisis.search.web.taglib.SearchErrorsAvailableTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>Faz o rendering do corpo da tag caso tenham ocorrido erros na pesquisa.</description>
+        <example><![CDATA[
+<search:searchErrorsAvailable>
+    <search:searchErrors>
+        ...
+    </search:searchErrors>
+</search:searchErrorsAvailable>
+        ]]>
+        </example>
+    </tag>
+    
+    <tag>
+        <name>searchParams</name>
+        <tag-class>pt.maisis.search.web.taglib.SearchParamsTag</tag-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <name>search</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Nome da pesquisa.</description>
+        </attribute>
+    </tag>
+    
+    <tag>
+        <name>searchResultReport</name>
+        <tag-class>pt.maisis.search.web.taglib.SearchResultReportTag</tag-class>
+        <body-content>empty</body-content>
+        <description></description>
+    </tag>
+</taglib>

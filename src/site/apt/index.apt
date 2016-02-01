@@ -1,0 +1,53 @@
+﻿Introdução
+
+  Esta framework tem como objectivo facilitar o desenvolvimento de soluções que
+  necessitam criar, de forma flexível, relatórios em ambientes JAVA.
+  Permite efectuar pesquisas a fontes de dados (neste momento só são suportadas 
+  bases de dados relacionais) tendo em conta um conjunto de informação (metadata) 
+  definida em ficheiros de configuração XML (descriptors).
+
+  Pode ser utilizada em vários ambientes JAVA (swing, web, etc). No entanto, neste
+  momento, dispõe de algumas facilidades exclusivas para ambientes web. 
+
+  Por exemplo, em ambiente web, a <framework> disponibiliza um conjunto de custom 
+  tags que permitem gerar o formulário de pesquisa, paginação, resultados das 
+  pesquisas, etc.
+
+  Normalmente, quando se integra a <framework> de pesquisa numa dada aplicação
+  web, criam-se templates para a página relativa ao formulário de pesquisa e 
+  para a página dos resultados. A partir daqui, sempre que são criadas novas
+  pesquisas, estas templates podem ser reutilizadas.
+
+Search Framework
+
+Módulos  
+
+  A framework está organizada por módulos:
+
+* Search Core
+
+  O <core> da <framework> de pesquisa disponibiliza todas as funcionalidades 
+  base desta <framework>.
+
+* Search Share
+
+  Este módulo permite utilizar a <framework> Share com a <framework> 
+  de pesquisa, sendo possível gravar pesquisas customizáveis e partilhar com outros 
+  utilizadores.
+
+* Search JFreeReport
+
+  Este módulo permite utilizar a <framework> JFreeReport com a <framework> 
+  de pesquisa, sendo possível exportar os resultados das pesquisas para 
+  diversos formatos (PDF, XLS, RTF, etc).
+
+* Search Exemplo
+
+  Para melhor exemplificar as funcionalidades base da <framework> de pesquisa 
+  foi criado um pequeno exemplo.
+
+Requisitos
+
+  Foi testada com JAVA 1.5 e 1.6.
+  Pode ser utilizada em web containers que suportem a especificação Servlet 2.3/JSP 1.2,
+  Servlet 2.4/JSP 2.0 e Servlet 2.5/JSP 2.1.

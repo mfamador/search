@@ -1,0 +1,72 @@
+﻿Internacionalização
+
+  A framework de pesquisa pode ser utilizada em ambientes em que é necessário
+  servir conteúdos em várias linguas.
+
+  Por defeito, a framework de pesquisa, quando precisa de traduzir um dado
+  conteúdo verifica, em primeiro lugar, qual o resource bundle configurado
+  para aplicação. O resource bundle é configurado no descriptor 
+  {{{search-config.html}search-config.xml}}. Se o resource bundle não for
+  configurado neste ficheiro, a framework tenta utilizar o resource
+  <<<search>>> (ex: search.properties, search_en.properties, etc.).
+
+  Conteúdos que são actualmente traduzidos pela framework:
+  
+  * {{{Search_Param_e_Result_Param_labels}Search Param e Result Param labels}}
+
+  * {{{Validation_Error_Messages}Validation Error Messages}}
+
+  []
+
+  
+* {Search Param e Result Param labels}
+  
+  No elemento \<label\> pode-se colocar a chave que deverá ser traduzida pela 
+  framework em função do locale. 
+  Por exemplo:
+
++---+
+<search-param>
+    <name>numero</name>
+    <field>NUM_EMPREGADO</field>
+    <operator>IN</operator>
+    <container>
+        <label>label.num</label>
+        <type>text</type>
+        <size>160</size>
+        <input-size>50</input-size>
+        <validation>
+            <converter>split</converter>
+        </validation>
+    </container>
+</search-param>
++---+
+
+  <<Nota:>> se a chave não for encontrada no resource bundle para o dado locale, 
+  então o valor da chave é retornado, neste caso seria <<<label.num>>>. Este
+  comportamento é útil em ambientes em que só se trabalha com um único locale.
+
+
+* {Validation Error Messages}
+
+  As mensagens de erro reportadas no processo de validação também devem ser 
+  internacionalizadas. Consulte o link {{{validation.html}validation}} para obter
+  mais detalhes.
+
+
+* Locale
+
+  Por defeito o locale utilizado é o locale da máquina virtual java (JVM).
+  No entanto, a framework permite que o locale seja especificado para
+  um dado request (HttpServletRequest) ou sessão (HttpSession).
+  Para o efeito a framework disponibiliza a classe 
+  {{{apidocs/pt/maisis/search/web/LocaleConfig.html}LocaleConfig}}.
+
+  Por exemplo:
+
++---+
+  ...
+  HttpSession session = request.getSession();
+  LocaleConfig.setLocale(session, locale);
+  ...
++---+

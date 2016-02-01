@@ -1,0 +1,115 @@
+body {
+    font-size: 11px; 
+    margin: 30px; 
+    color: #555; 
+    font-family: verdana, arial;
+}
+
+.table-header {
+    font-size: 11px; 
+    color: #555; 
+    font-family: verdana, arial;
+    width: 562px;
+    border-spacing:0;
+}
+
+.text, .select {
+    font-weight: bold; 
+    font-size: 11; 
+    font-family: verdana, arial;
+}
+
+input.button {
+    font-weight: bold; 
+    font-size: 11; 
+    padding-bottom: 1px; 
+    width: 103px; 
+    padding-top: 1px; 
+    font-family: verdana, arial;
+}
+
+a {
+    color: #3068b5; 
+    text-decoration: underline;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.multiselect {
+    font-size: 11px; 
+    color: #555;
+    width: 150px; 
+    height: 60px;
+}
+
+img.arrow {
+  border: solid 1px #dddddd;
+}
+
+.table-result {
+  margin-top: 5px;
+  width: 562px;
+  font-size: 11px;
+  border-collapse: collapse;
+}
+
+.table-result th, .table-result td {
+  border-width: 1px;
+  border-style: solid;
+  border-color: #cccccc;
+}
+
+.table-result th {
+  background: #eeeeee;
+  padding: 4px;
+  color: #555;
+  font-weight: normal;
+}
+
+.table-result td {
+  border-top: solid 1px #dddddd;
+  padding: 4px;
+  background: white;
+}
+
+.srclabel {
+  font-weight: bold;
+  font-size: 11;
+}
+
+.option {
+  color:#555;
+  border:solid 1px #bbbbbb;
+  background:white;
+  padding:4px;
+  line-height:2;
+  font-weight: bold;
+  font-size:11px;
+  font-family: verdana;
+  text-decoration: none;
+}
+
+.option-selected {
+  color:black;
+  border:solid 1px #bbbbbb;
+  background:#eeeeee;
+  padding:4px;
+  font-weight: bold;
+  font-size:11px;
+  font-family: verdana;
+  text-decoration: underline;
+}
+
+.table-export {
+  width: 562px;
+  bgcolor: white;
+  font-size: 11px;
+}
+
+.table-result .result-value-2 {
+  border-top: solid 1px #dddddd;
+  padding: 4px;
+  background: #eeeeee;
+}

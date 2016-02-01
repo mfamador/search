@@ -1,0 +1,15 @@
+﻿<Search Framework Releases>
+
+  <<General Availability (GA) Releases:>>
+
+  * Distribuição mínima:\
+    Inclui unicamente a componente que permite integrar a <framework> JFreeeReport na <framework> de pesquisa.
+
+    {{{assembly/search-jfreereport-1.1-bin.zip} search-jfreereport-1.1-bin.zip}}
+
+  
+  * Distribuição completa:\
+    Esta distribuição inclui todas as dependências.
+
+    {{{assembly/search-jfreereport-1.1-dep.zip} search-jfreereport-1.1-dep.zip}}
+    

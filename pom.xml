@@ -24,9 +24,7 @@
     <modules>
         <module>search-core</module>
         <module>search-share</module>
-        <module>search-share-nohibernate</module>
         <module>search-jfreereport</module>
-        <module>search-jfreereport_0.8.7</module>
         <module>search-example</module>
     </modules>
   
@@ -50,28 +48,11 @@
             <organization>Maisis</organization>
             <organizationUrl>www.maisis.pt</organizationUrl>
             <roles>
-                <role>project manager</role>
-                <role>solution architect</role>
+                <role>software engineer</role>
             </roles>
         </developer>
     </developers>
-  
-    <!--<pluginRepositories>
-        <pluginRepository>
-            <id>Maven Snapshots New</id>
-            <url>https://nexus.codehaus.org/content/repositories/releases/</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>Apache Plugins</id>
-            <url>http://repo1.maven.org/maven2</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>tlc</id>
-            <name>TLC Repository</name>
-            <url>http://commons.ucalgary.ca/pub/m2</url>
-        </pluginRepository>
-    </pluginRepositories>-->
-  
+    
     <profiles>
         <profile>
             <id>dev</id>
@@ -164,20 +145,6 @@
                     </items>
                 </configuration>
             </plugin>
-            
-            <!--<plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.2.1</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                    </execution>
-                </executions>
-                <configuration>
-                    <executable>make_production.bat</executable>
-                </configuration>
-            </plugin>-->
       
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

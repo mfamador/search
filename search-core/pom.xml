@@ -54,7 +54,7 @@
 
                         <artifactId>derby</artifactId>
 
-                        <version>10.2.1.6</version>
+                        <version>10.14.2.0</version>
 
                         <scope>compile</scope>
 
@@ -422,7 +422,7 @@
 
             <artifactId>derby</artifactId>
 
-            <version>10.8.2.2</version>
+            <version>10.14.2.0</version>
 
             <scope>test</scope>
 
